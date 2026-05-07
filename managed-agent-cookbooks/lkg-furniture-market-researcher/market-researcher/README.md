@@ -24,10 +24,12 @@ Default scope is the Australian bedding, mattress, sleep-products, and bedroom f
 
 Managed Agent deployment needs a reachable MCP URL for web search. The local plugin uses DuckDuckGo through `uvx duckduckgo-mcp-server`; production Managed Agent deployment should expose an equivalent governed MCP endpoint.
 
+From the repository root:
+
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 export WEB_SEARCH_MCP_URL=https://your-managed-web-search-mcp.example.com
-../../scripts/deploy-managed-agent.sh lkg-furniture-market-researcher/market-researcher
+scripts/deploy-managed-agent.sh lkg-furniture-market-researcher/market-researcher
 ```
 
 ## Steering events
