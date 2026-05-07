@@ -21,6 +21,12 @@ description: |
 
 # Comparable Company Analysis
 
+## LKG furniture adaptation
+
+Keep the original comps-analysis discipline: peer set quality, source hierarchy, formula integrity, cross-references, statistics, notes, assumptions, and Excel formatting. For this plugin, apply it only when public comparable data is useful for Australian furniture, bedding, mattress, or adjacent home-retail peers.
+
+Relevant public-data peers may include Harvey Norman, Nick Scali, Temple & Webster, Adairs, IKEA Australia where public data is available, Fantastic Furniture / Greenlit Brands where public data is available, and other furniture or bedding retailers with credible public information. If valuation multiples are not relevant to the weekly digest, use the same structure for operating peer signals such as sales growth, gross margin commentary, inventory, store network, online sales commentary, and promotional intensity.
+
 ## ⚠️ CRITICAL: Data Source Priority (READ FIRST)
 
 **ALWAYS follow this data source hierarchy:**

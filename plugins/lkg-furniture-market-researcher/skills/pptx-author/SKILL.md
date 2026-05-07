@@ -7,6 +7,10 @@ description: Produce a .pptx file on disk (headless) instead of driving a live P
 
 Use this skill when running **headless** (managed-agent / CMA mode) and you need to deliver a PowerPoint deck as a **file artifact** rather than editing a live document via `mcp__office__powerpoint_*`.
 
+## LKG furniture adaptation
+
+For this plugin, keep the original PowerPoint artifact workflow. When slides are requested, produce a furniture-market digest or board-summary deck covering key takeaways, competitor watch, demand signals, margin/supply-chain signals, GM actions, board watch items, and source review status.
+
 ## Output contract
 
 - Write to `./out/<name>.pptx`. Create `./out/` if it does not exist.

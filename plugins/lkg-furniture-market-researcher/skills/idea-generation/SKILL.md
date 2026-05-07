@@ -2,6 +2,10 @@
 
 description: Systematic stock screening and investment idea sourcing. Combines quantitative screens, thematic research, and pattern recognition to surface new long and short ideas. Use when looking for new ideas, running screens, or conducting thematic sweeps. Triggers on "idea generation", "stock screen", "find ideas", "what looks interesting", "screen for", "new ideas", or "pitch me something".
 
+## LKG furniture adaptation
+
+For this plugin, preserve the original evidence-first idea-generation workflow, but interpret "ideas" as GM/Board follow-up actions unless the user explicitly asks for investment ideas. Examples: promotion response, range review, inventory review, supplier check, board watch item, competitor expansion watch, or source-verification follow-up.
+
 ## Workflow
 
 ### Step 1: Define Search Criteria

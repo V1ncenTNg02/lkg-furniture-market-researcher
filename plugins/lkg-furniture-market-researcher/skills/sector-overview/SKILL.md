@@ -2,6 +2,10 @@
 
 description: Create comprehensive industry and sector landscape reports covering market dynamics, competitive positioning, key players, and thematic trends. Use for client requests, sector initiations, thematic research pieces, or internal knowledge building. Triggers on "sector overview", "industry report", "market landscape", "sector analysis", "industry deep dive", or "thematic research".
 
+## LKG furniture adaptation
+
+For this plugin, default the sector to Australian bedding, mattresses, sleep products, and bedroom furniture. Keep the original sector-overview workflow, but apply it to furniture-market structure, retail demand, housing and consumer drivers, supply-chain and margin signals, and competitors relevant to Hypnos Group / Snooze.
+
 ## Workflow
 
 ### Step 1: Define Scope

@@ -5,6 +5,12 @@ description: Framework for building competitive landscape decks — market posit
 
 # Competitive Landscape Mapping
 
+## LKG furniture adaptation
+
+For this plugin, apply the original competitive-analysis workflow to Australian bedding, mattress, sleep-products, and bedroom furniture competitors. Default competitors include Snooze, Forty Winks, Bedshed, Sleeping Giant, Harvey Norman, Domayne, IKEA Australia, Temple & Webster, Adairs, Nick Scali, Freedom, Fantastic Furniture, and Amart Furniture.
+
+Furniture-specific comparison dimensions include promotions, pricing, product range, store footprint, online merchandising, delivery/service offers, inventory signals, and GM/Board relevance.
+
 Build a complete competitive analysis deck. This is a two-phase process: gather requirements and get outline approval first, then build.
 
 ## Environment check

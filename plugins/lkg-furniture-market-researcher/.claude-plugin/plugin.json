@@ -1,8 +1,8 @@
 {
-  "name": "market-researcher",
+  "name": "lkg-furniture-market-researcher",
   "version": "0.1.0",
-  "description": "Sector or theme to industry overview, competitive landscape, peer comps, and ideas shortlist",
+  "description": "Anthropic market-researcher template lightly adapted for LKG Australian bedding and bedroom furniture market research",
   "author": {
-    "name": "Anthropic FSI"
+    "name": "Anthropic FSI, adapted for LKG"
   }
 }
