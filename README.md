@@ -47,13 +47,13 @@ Current added connector:
 plugins/lkg-furniture-market-researcher/.mcp.json
 ```
 
-The plugin now includes a `web-search` MCP connector using the Brave Search MCP server. It expects:
+The plugin now includes a `web-search` MCP connector using DuckDuckGo Search MCP.
 
 ```text
-BRAVE_API_KEY
+uvx duckduckgo-mcp-server
 ```
 
-to be available in the user's environment.
+This option does not require a search API key.
 
 Original guardrails kept:
 
@@ -68,6 +68,12 @@ Original guardrails kept:
 The brief asks us to adapt the Anthropic template, not rebuild an agent from scratch.
 
 So the plugin keeps the original workflow and skill structure. Changes are intentionally minimal and only add LKG furniture context where the original template needs to know the industry, audience, or output purpose.
+
+Assumptions are documented in:
+
+```text
+docs/assumptions.md
+```
 
 ## Changed Files
 
@@ -88,11 +94,13 @@ skills/pptx-author/SKILL.md
 Added LKG-specific skill:
 
 ```text
+skills/lkg-furniture-market-digest/SKILL.md
 skills/gm-board-classifier/SKILL.md
 ```
 
 Purpose:
 
+- `lkg-furniture-market-digest`: defines Hypnos Group / LK Group context, default players, 10 public source scan, signal extraction rules, digest format, citations, and why-this-matters requirements.
 - Defines GM / Board / Both / Ignore routing criteria.
 - Provides GM and Board message templates.
 - Defines confidence and human-review rules.
@@ -118,7 +126,64 @@ Purpose:
 - `comps-analysis-agent`: public peer metrics, operating signals, comparable data, and Excel/source-log discipline.
 - `idea-generation-agent`: evidence-backed GM / Board follow-up actions.
 - `gm-board-classifier-agent`: classifies items as GM / Board / Both / Ignore using the `gm-board-classifier` skill.
-- `note-writer-agent`: assembles the final weekly digest / research note and source log.
+- `note-writer-agent`: generates approved Microsoft Word digest artifacts and source log after human review.
+
+### Post-Approval Outputs
+
+After human approval, the plugin now has an explicit Microsoft Word output contract.
+
+Generated local Word files:
+
+```text
+output/lkg-furniture-gm-weekly-digest.docx
+output/lkg-furniture-board-weekly-digest.docx
+output/lkg-furniture-internal-source-log.docx
+```
+
+Purpose:
+
+- `lkg-furniture-gm-weekly-digest.docx`: operational GM-facing digest.
+- `lkg-furniture-board-weekly-digest.docx`: strategic board-facing digest.
+- `lkg-furniture-internal-source-log.docx`: internal review/source log covering classifications, source URLs, confidence, human decisions, and suppressed/ignored items.
+
+Rules:
+
+- Word files are generated only after human approval.
+- The agent creates files but does not distribute them.
+- Sending or circulation remains outside the agent unless a governed production connector is added later.
+- If Microsoft Word add-in / Office tooling is available, the note writer can use it. Otherwise, the demo path is local `.docx` files in `output/`.
+
+### Command
+
+Added:
+
+```text
+plugins/lkg-furniture-market-researcher/commands/lkg-furniture-digest.md
+```
+
+Purpose:
+
+- Provides a single command-style entrypoint for the live demo.
+- Runs the LKG furniture market-research flow.
+- Scans 10 public sources where relevant.
+- Stops for human review.
+- Generates the approved Word artifacts after review.
+
+### Interview Docs
+
+Updated:
+
+```text
+docs/assumptions.md
+docs/governance.md
+docs/deployment-thinking.md
+```
+
+Purpose:
+
+- `assumptions.md`: public data, synthetic data, output, review, and connector assumptions.
+- `governance.md`: citation rules, human review, source quality, output governance, cost controls, and failure handling.
+- `deployment-thinking.md`: Claude Code/Cowork plugin vs Claude Managed Agent production path.
 
 ### Connectors
 
@@ -137,7 +202,8 @@ web-search
 Purpose:
 
 - Public-source discovery for ABS data, ASX announcements, company investor pages, competitor websites, and reputable retail/business news.
-- Requires `BRAVE_API_KEY` in the environment.
+- Uses DuckDuckGo Search MCP through `uvx duckduckgo-mcp-server`.
+- Does not require a search API key.
 
 Future connector options documented but not implemented:
 
@@ -187,6 +253,7 @@ After:
   - Hypnos Group / Snooze context
   - relevant competitors
 - Added `why this matters` and GM / Board / Both / Ignore routing expectation.
+- Added explicit 10-public-source scan using the `lkg-furniture-market-digest` skill.
 - Added public-data-only and human-approval guardrails.
 
 Why:
@@ -230,6 +297,7 @@ After:
 
 ```text
 market-researcher orchestrator
+  -> lkg-furniture-market-digest skill for 10-source scan requirements
   -> sector-overview-agent
   -> competitive-analysis-agent
   -> comps-analysis-agent
@@ -246,7 +314,7 @@ Subagent responsibilities:
 - `comps-analysis-agent`: public peer metrics, operating signals, comparable data, and Excel/source-log discipline.
 - `idea-generation-agent`: evidence-backed GM / Board follow-up actions.
 - `gm-board-classifier-agent`: GM / Board / Both / Ignore routing recommendation.
-- `note-writer-agent`: final weekly digest / research note assembly.
+- `note-writer-agent`: post-approval Word digest/source-log generation.
 
 Why:
 
@@ -269,7 +337,7 @@ Before:
 
 After:
 
-- Added a `web-search` MCP connector for public-source discovery.
+- Added a `web-search` MCP connector for public-source discovery using DuckDuckGo Search MCP.
 - Updated research-oriented agents to use web search for:
   - ABS public data
   - ASX announcements
@@ -282,6 +350,7 @@ Why:
 - The brief requires public data only.
 - LKG will not provide private data in advance.
 - Web search is the most practical demo connector for scanning 5-10 public sources.
+- DuckDuckGo is useful for demo setup because it avoids a separate search API key.
 
 Future connector options are documented in `.mcp.json` but not implemented yet:
 
@@ -294,6 +363,40 @@ microsoft-365-output
 ```
 
 These could become governed MCP connectors in production.
+
+### Added Skill: `lkg-furniture-market-digest`
+
+Added:
+
+```text
+skills/lkg-furniture-market-digest/SKILL.md
+```
+
+Before:
+
+- The plugin had LKG furniture context in the main agent and original skills.
+- There was no dedicated custom digest skill that knew Hypnos Group, the player list, source mix, and digest template.
+
+After:
+
+- Added a custom LKG/Hypnos digest skill.
+- The main workflow now explicitly scans 10 public sources using this skill.
+- The skill defines:
+  - Hypnos Group under LK Group context
+  - Snooze, Future Sleep, and G&G Furniture
+  - default competitor watchlist
+  - required 10 public source mix
+  - signals to extract
+  - weekly digest template
+  - source log requirements
+  - why-this-matters rule
+  - public-data and human-review guardrails
+
+Why:
+
+- The brief's "sharp version" asks for a custom skill that knows the players.
+- It also asks for a daily or weekly digest scanning 5-10 sources.
+- This skill makes that requirement explicit and inspectable.
 
 ### Added Skill: `gm-board-classifier`
 

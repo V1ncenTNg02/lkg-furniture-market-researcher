@@ -1,13 +1,13 @@
 {
   "mcpServers": {
     "web-search": {
-      "command": "npx",
+      "command": "uvx",
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-brave-search"
+        "duckduckgo-mcp-server"
       ],
       "env": {
-        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+        "DDG_REGION": "au-en",
+        "DDG_SAFE_SEARCH": "MODERATE"
       }
     }
   },

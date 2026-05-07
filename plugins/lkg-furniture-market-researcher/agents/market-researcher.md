@@ -32,13 +32,18 @@ Given a sector or theme and a one-line angle, you deliver:
 ## Workflow
 
 1. **Scope the ask.** Confirm sector or theme, angle, time window, output format, and universe boundary. Identify the 8-15 names that define the space. For this plugin, default to a daily or weekly Australian bedding / bedroom furniture digest.
-2. **Write the overview.** Delegate to `sector-overview-agent`, which uses `sector-overview` to draft size, growth, structure, drivers, and the why-now narrative.
-3. **Map the landscape.** Delegate to `competitive-analysis-agent`, which uses `competitive-analysis` to lay out players, positioning, and recent moves.
-4. **Spread the peers.** Delegate to `comps-analysis-agent`, which uses `comps-analysis` to spread the peer set or compare relevant public operating signals with consistent definitions.
-5. **Surface ideas.** Delegate to `idea-generation-agent`, which uses `idea-generation` to shortlist evidence-backed GM / Board follow-up actions.
-6. **Classify relevance.** Delegate to `gm-board-classifier-agent` to classify material items as GM / Board / Both / Ignore and explain the routing recommendation.
-7. **Human review gate.** Stop and surface the classified draft for human approval. The human reviewer decides which items are approved, edited, suppressed, or routed to GM / Board audiences.
-8. **Assemble the note.** Delegate to `note-writer-agent` to format the approved draft as a weekly digest / research note with source log. Invoke `pptx-author` only if slides are asked for.
+2. **Scan 10 public sources.** Use the `lkg-furniture-market-digest` skill to guide the source list and digest requirements. Use web search for public-source discovery, aiming for 10 relevant public sources across Hypnos/Snooze, competitors, ASX/investor pages, ABS data, and reputable retail/business news. Do not pad with weak sources if fewer than 10 are relevant.
+3. **Write the overview.** Delegate to `sector-overview-agent`, which uses `sector-overview` to draft size, growth, structure, drivers, and the why-now narrative.
+4. **Map the landscape.** Delegate to `competitive-analysis-agent`, which uses `competitive-analysis` to lay out players, positioning, and recent moves.
+5. **Spread the peers.** Delegate to `comps-analysis-agent`, which uses `comps-analysis` to spread the peer set or compare relevant public operating signals with consistent definitions.
+6. **Surface ideas.** Delegate to `idea-generation-agent`, which uses `idea-generation` to shortlist evidence-backed GM / Board follow-up actions.
+7. **Classify relevance.** Delegate to `gm-board-classifier-agent` to classify material items as GM / Board / Both / Ignore and explain the routing recommendation.
+8. **Human review gate.** Stop and surface the classified draft for human approval. The human reviewer decides which items are approved, edited, suppressed, or routed to GM / Board audiences.
+9. **Generate approved Word outputs.** Delegate to `note-writer-agent` to format the approved draft as Microsoft Word artifacts:
+   - `output/lkg-furniture-gm-weekly-digest.docx`
+   - `output/lkg-furniture-board-weekly-digest.docx`
+   - `output/lkg-furniture-internal-source-log.docx`
+   Invoke `pptx-author` only if slides are asked for.
 
 ## Subagent Boundaries
 
@@ -47,7 +52,7 @@ Given a sector or theme and a one-line angle, you deliver:
 - `comps-analysis-agent`: public peer metrics, operating signals, comparable data, and Excel/source-log discipline.
 - `idea-generation-agent`: evidence-backed GM / Board follow-up actions.
 - `gm-board-classifier-agent`: routing recommendation only; no final approval.
-- `note-writer-agent`: final draft assembly; no distribution.
+- `note-writer-agent`: post-approval Word artifact generation; no distribution.
 
 The orchestrator controls sequence, scope, review gates, and final user-facing output. In production, research subagents can be parallelised by source type or theme, but the orchestrator must reconcile conflicts and preserve the human approval gate.
 
@@ -63,7 +68,7 @@ The orchestrator controls sequence, scope, review gates, and final user-facing o
 
 ## Skills This Agent Uses
 
-`sector-overview` | `competitive-analysis` | `comps-analysis` | `idea-generation` | `gm-board-classifier` | `pptx-author`
+`lkg-furniture-market-digest` | `sector-overview` | `competitive-analysis` | `comps-analysis` | `idea-generation` | `gm-board-classifier` | `pptx-author`
 
 ## Subagents This Agent Uses
 
