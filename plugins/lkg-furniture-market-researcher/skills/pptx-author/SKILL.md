@@ -1,30 +1,43 @@
 ---
 name: pptx-author
-description: Optional helper for turning the approved LKG weekly digest into a concise PowerPoint board-summary outline or file artifact.
+description: Produce a .pptx file on disk (headless) instead of driving a live PowerPoint document — for managed-agent sessions with no open Office app.
 ---
 
-# PowerPoint Board Summary
+# pptx-author
 
-Use this skill only after the draft digest has passed source validation, GM/Board classification, and human approval.
+Use this skill when running **headless** (managed-agent / CMA mode) and you need to deliver a PowerPoint deck as a **file artifact** rather than editing a live document via `mcp__office__powerpoint_*`.
 
-## Output
+## Output contract
 
-Create a short board-summary outline or PowerPoint-ready structure:
+- Write to `./out/<name>.pptx`. Create `./out/` if it does not exist.
+- Return the relative path in your final message so the orchestration layer can collect it.
 
-```text
-Slide 1: Weekly Market Digest - Key Takeaways
-Slide 2: Competitor Watch
-Slide 3: Demand And Consumer Signals
-Slide 4: Supply Chain And Margin Signals
-Slide 5: Items For Board Attention
-Slide 6: Source Log And Review Status
+## How to build the deck
+
+Write a short Python script and run it with Bash. Use `python-pptx`:
+
+```python
+from pptx import Presentation
+from pptx.util import Inches, Pt
+
+prs = Presentation("./templates/firm-template.pptx")  # if a template is provided
+# or: prs = Presentation()
+
+slide = prs.slides.add_slide(prs.slide_layouts[5])    # title-only
+slide.shapes.title.text = "Valuation Summary"
+# ... add tables / charts / text boxes ...
+
+prs.save("./out/pitch-<target>.pptx")
 ```
 
-## Rules
+## Conventions (mirror the live-Office `pitch-deck` skill)
 
-- One takeaway per slide.
-- Keep sources on each slide or in a source appendix.
-- Do not include unapproved or low-confidence claims unless clearly marked.
-- Do not distribute the deck directly.
-- If Microsoft PowerPoint tooling is available, prepare the content for that tool. If not, return a PowerPoint-ready outline.
+- **One idea per slide.** Title states the takeaway; body supports it.
+- **Every number traces to the model.** If a figure comes from `./out/model.xlsx`, footnote the sheet and cell.
+- **Use the firm template** when one is mounted at `./templates/`; otherwise default layouts.
+- **Charts**: prefer embedding a PNG rendered from the model over native pptx charts when fidelity matters.
+- **No external sends.** This skill writes a file; it never emails or uploads.
 
+## When NOT to use
+
+If `mcp__office__powerpoint_*` tools are available (Cowork plugin mode), use those instead — they drive the user's live document with review checkpoints. This skill is the file-producing fallback for headless runs.

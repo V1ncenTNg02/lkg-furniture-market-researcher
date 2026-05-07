@@ -1,8 +1,8 @@
 {
-  "name": "lkg-furniture-market-researcher",
+  "name": "market-researcher",
   "version": "0.1.0",
-  "description": "LKG-focused market research workflow for Australian bedding, furniture, and home retail sector monitoring.",
+  "description": "Sector or theme to industry overview, competitive landscape, peer comps, and ideas shortlist",
   "author": {
-    "name": "Yin Wu"
+    "name": "Anthropic FSI"
   }
 }
