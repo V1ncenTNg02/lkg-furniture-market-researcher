@@ -41,6 +41,20 @@ mcp__capiq__*
 mcp__factset__*
 ```
 
+Current added connector:
+
+```text
+plugins/lkg-furniture-market-researcher/.mcp.json
+```
+
+The plugin now includes a `web-search` MCP connector using the Brave Search MCP server. It expects:
+
+```text
+BRAVE_API_KEY
+```
+
+to be available in the user's environment.
+
 Original guardrails kept:
 
 - Treat third-party material as untrusted data.
@@ -56,6 +70,88 @@ The brief asks us to adapt the Anthropic template, not rebuild an agent from scr
 So the plugin keeps the original workflow and skill structure. Changes are intentionally minimal and only add LKG furniture context where the original template needs to know the industry, audience, or output purpose.
 
 ## Changed Files
+
+## Current Plugin Inventory
+
+### Skills
+
+Original Anthropic skills kept:
+
+```text
+skills/sector-overview/SKILL.md
+skills/competitive-analysis/SKILL.md
+skills/comps-analysis/SKILL.md
+skills/idea-generation/SKILL.md
+skills/pptx-author/SKILL.md
+```
+
+Added LKG-specific skill:
+
+```text
+skills/gm-board-classifier/SKILL.md
+```
+
+Purpose:
+
+- Defines GM / Board / Both / Ignore routing criteria.
+- Provides GM and Board message templates.
+- Defines confidence and human-review rules.
+- Ensures the classifier recommends routing only and does not send messages.
+
+### Subagents
+
+Added subagents:
+
+```text
+agents/sector-overview-agent.md
+agents/competitive-analysis-agent.md
+agents/comps-analysis-agent.md
+agents/idea-generation-agent.md
+agents/gm-board-classifier-agent.md
+agents/note-writer-agent.md
+```
+
+Purpose:
+
+- `sector-overview-agent`: sector structure, value chain, demand drivers, risks, and why-now narrative.
+- `competitive-analysis-agent`: competitor moves, positioning, promotions, stores, channel activity, and recent developments.
+- `comps-analysis-agent`: public peer metrics, operating signals, comparable data, and Excel/source-log discipline.
+- `idea-generation-agent`: evidence-backed GM / Board follow-up actions.
+- `gm-board-classifier-agent`: classifies items as GM / Board / Both / Ignore using the `gm-board-classifier` skill.
+- `note-writer-agent`: assembles the final weekly digest / research note and source log.
+
+### Connectors
+
+Added connector config:
+
+```text
+plugins/lkg-furniture-market-researcher/.mcp.json
+```
+
+Implemented connector:
+
+```text
+web-search
+```
+
+Purpose:
+
+- Public-source discovery for ABS data, ASX announcements, company investor pages, competitor websites, and reputable retail/business news.
+- Requires `BRAVE_API_KEY` in the environment.
+
+Future connector options documented but not implemented:
+
+```text
+asx-announcements
+abs-retail-trade
+company-investor-pages
+competitor-web-monitor
+microsoft-365-output
+```
+
+Purpose:
+
+- These are production candidates for governed data access and Word / Excel / PowerPoint output.
 
 ### `.claude-plugin/plugin.json`
 
@@ -96,6 +192,137 @@ After:
 Why:
 
 - This is the main LKG-specific steering point while preserving the Anthropic workflow.
+
+Additional subagent orchestration change:
+
+- The main agent now remains the orchestrator.
+- Each major workflow step is delegated to a focused subagent.
+- The orchestrator controls scope, sequence, review gates, and final output.
+
+Why:
+
+- Creates clearer permission boundaries.
+- Reduces context loaded into each subagent.
+- Keeps each step easier to test and explain.
+- Allows future parallel research by source type or theme.
+
+### Added Subagents
+
+Added:
+
+```text
+agents/
+  sector-overview-agent.md
+  competitive-analysis-agent.md
+  comps-analysis-agent.md
+  idea-generation-agent.md
+  gm-board-classifier-agent.md
+  note-writer-agent.md
+```
+
+Before:
+
+- The original `market-researcher` agent invoked skills directly.
+
+After:
+
+- The `market-researcher` agent delegates each step:
+
+```text
+market-researcher orchestrator
+  -> sector-overview-agent
+  -> competitive-analysis-agent
+  -> comps-analysis-agent
+  -> idea-generation-agent
+  -> gm-board-classifier-agent
+  -> human review gate
+  -> note-writer-agent
+```
+
+Subagent responsibilities:
+
+- `sector-overview-agent`: sector structure, demand drivers, value chain, risks, and why-now narrative.
+- `competitive-analysis-agent`: competitor moves, positioning, promotions, stores, channels, and recent developments.
+- `comps-analysis-agent`: public peer metrics, operating signals, comparable data, and Excel/source-log discipline.
+- `idea-generation-agent`: evidence-backed GM / Board follow-up actions.
+- `gm-board-classifier-agent`: GM / Board / Both / Ignore routing recommendation.
+- `note-writer-agent`: final weekly digest / research note assembly.
+
+Why:
+
+- This is a meaningful adaptation while preserving the original workflow.
+- The GM/Board classifier directly addresses the brief's request to flag items relevant to a portfolio company GM or the LKG board.
+- In production, multiple research-oriented subagents could run in parallel, such as one for public filings, one for competitor websites, one for ABS/macro data, and one for news.
+
+### Added Connector: `web-search`
+
+Added:
+
+```text
+plugins/lkg-furniture-market-researcher/.mcp.json
+```
+
+Before:
+
+- The copied template expected institutional data MCPs such as CapIQ and FactSet.
+- There was no public web-search connector declared for the LKG furniture use case.
+
+After:
+
+- Added a `web-search` MCP connector for public-source discovery.
+- Updated research-oriented agents to use web search for:
+  - ABS public data
+  - ASX announcements
+  - company investor pages
+  - competitor websites
+  - reputable retail/business news
+
+Why:
+
+- The brief requires public data only.
+- LKG will not provide private data in advance.
+- Web search is the most practical demo connector for scanning 5-10 public sources.
+
+Future connector options are documented in `.mcp.json` but not implemented yet:
+
+```text
+asx-announcements
+abs-retail-trade
+company-investor-pages
+competitor-web-monitor
+microsoft-365-output
+```
+
+These could become governed MCP connectors in production.
+
+### Added Skill: `gm-board-classifier`
+
+Added:
+
+```text
+skills/gm-board-classifier/SKILL.md
+```
+
+Before:
+
+- GM/Board relevance was only mentioned in the main agent context.
+- There was no dedicated routing criteria or message template.
+
+After:
+
+- `gm-board-classifier-agent` uses the `gm-board-classifier` skill.
+- The skill defines:
+  - `GM`, `Board`, `Both`, and `Ignore` classification rules
+  - routing criteria
+  - GM message template
+  - Board message template
+  - confidence and human-review rules
+  - no-send / human-approval guardrails
+
+Why:
+
+- The brief explicitly asks for items to be flagged by relevance to a portfolio company GM or the LKG board.
+- Keeping the criteria in a skill makes the adaptation inspectable and easier to govern.
 
 ### `skills/sector-overview/SKILL.md`
 

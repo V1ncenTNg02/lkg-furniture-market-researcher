@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "web-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      }
+    }
+  },
+  "x_future_connectors": [
+    {
+      "name": "asx-announcements",
+      "purpose": "Search and fetch public ASX announcements for listed furniture, bedding, retail, and homewares peers."
+    },
+    {
+      "name": "abs-retail-trade",
+      "purpose": "Fetch Australian Bureau of Statistics retail trade and household-goods demand data."
+    },
+    {
+      "name": "company-investor-pages",
+      "purpose": "Monitor public investor relations pages for Adairs, Nick Scali, Temple & Webster, Harvey Norman, and other relevant peers."
+    },
+    {
+      "name": "competitor-web-monitor",
+      "purpose": "Monitor public competitor websites for promotions, range changes, delivery offers, and store-network updates."
+    },
+    {
+      "name": "microsoft-365-output",
+      "purpose": "Write the approved digest and source log into Word, Excel, or PowerPoint using governed Microsoft 365 connectors."
+    }
+  ]
+}
