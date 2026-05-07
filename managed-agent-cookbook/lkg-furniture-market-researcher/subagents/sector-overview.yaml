@@ -1,7 +1,7 @@
 name: sector-overview-agent
 model: claude-opus-4-7
 system:
-  file: ../../../../plugins/lkg-furniture-market-researcher/agents/sector-overview-agent.md
+  file: ../../../plugins/lkg-furniture-market-researcher/agents/sector-overview-agent.md
   append: |
     You are running headless. Return concise, cited research text only; do not write files.
 tools:
@@ -14,5 +14,5 @@ tools:
 mcp_servers:
   - { type: url, name: web-search, url: "${WEB_SEARCH_MCP_URL}" }
 skills:
-  - { path: ../../../../plugins/lkg-furniture-market-researcher/skills/sector-overview }
+  - { path: ../../../plugins/lkg-furniture-market-researcher/skills/sector-overview }
 callable_agents: []

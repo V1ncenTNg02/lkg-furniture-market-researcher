@@ -29,7 +29,7 @@ From the repository root:
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 export WEB_SEARCH_MCP_URL=https://your-managed-web-search-mcp.example.com
-scripts/deploy-managed-agent.sh lkg-furniture-market-researcher/market-researcher
+scripts/deploy-managed-agent.sh lkg-furniture-market-researcher
 ```
 
 ## Steering events

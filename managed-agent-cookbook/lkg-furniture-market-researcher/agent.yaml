@@ -4,7 +4,7 @@ name: lkg-furniture-market-researcher
 model: claude-opus-4-7
 
 system:
-  file: ../../../plugins/lkg-furniture-market-researcher/agents/market-researcher.md
+  file: ../../plugins/lkg-furniture-market-researcher/agents/market-researcher.md
   append: |
     You are running as a headless Managed Agent.
     Use public data only.
@@ -25,7 +25,7 @@ mcp_servers:
   - { type: url, name: web-search, url: "${WEB_SEARCH_MCP_URL}" }
 
 skills:
-  - { from_plugin: ../../../plugins/lkg-furniture-market-researcher }
+  - { from_plugin: ../../plugins/lkg-furniture-market-researcher }
 
 callable_agents:
   - { manifest: ./subagents/sector-overview.yaml }
