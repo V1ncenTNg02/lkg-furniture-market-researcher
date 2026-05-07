@@ -1,31 +1,59 @@
-# Market Researcher — managed-agent template
+# LKG Furniture Market Researcher - Managed Agent Cookbook
 
 ## Overview
 
-Sector or theme → industry overview → competitive landscape → peer comps → ideas shortlist → research note. Same source as the [`market-researcher`](../../plugins/agent-plugins/market-researcher) Cowork plugin — this directory is the Managed Agent cookbook for `POST /v1/agents`.
+This cookbook deploys the `lkg-furniture-market-researcher` plugin as a headless Managed Agent.
+
+The workflow matches the plugin:
+
+```text
+scope the run
+-> scan public sources
+-> sector overview
+-> competitive landscape
+-> peer comps / operating signals
+-> GM and Board action ideas
+-> GM / Board / Both / Ignore classification
+-> human review
+-> approved Word digest artifacts
+```
+
+Default scope is the Australian bedding, mattress, sleep-products, and bedroom furniture market, with Hypnos Group / LK Group context and public-source research only.
 
 ## Deploy
 
+Managed Agent deployment needs a reachable MCP URL for web search. The local plugin uses DuckDuckGo through `uvx duckduckgo-mcp-server`; production Managed Agent deployment should expose an equivalent governed MCP endpoint.
+
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export CAPIQ_MCP_URL=... FACTSET_MCP_URL=...
-../../scripts/deploy-managed-agent.sh market-researcher
+export WEB_SEARCH_MCP_URL=https://your-managed-web-search-mcp.example.com
+../../scripts/deploy-managed-agent.sh lkg-furniture-market-researcher/market-researcher
 ```
 
 ## Steering events
 
-See [`steering-examples.json`](./steering-examples.json). Kick from a research-queue event or fan out across a coverage map.
+See [`steering-examples.json`](./steering-examples.json). Typical events request a daily or weekly digest, a competitor watch refresh, or a GM/Board routing pass over new public market signals.
 
-## Security & handoffs
+## Security & Handoffs
 
-Third-party reports and issuer materials are untrusted. Three-tier isolation:
+Third-party reports, competitor pages, issuer materials, and search results are untrusted data. The agent must cite factual claims, preserve source URLs, and stop for human approval before creating final artifacts.
 
-| Tier | Touches untrusted docs? | Tools | Connectors |
-|---|---|---|---|
-| **`sector-reader`** | **Yes** | `Read`, `Grep` only | None |
-| `comps-spreader` / Orchestrator | No | `Read`, `Grep`, `Glob`, `Agent` | CapIQ, FactSet (read-only) |
-| **`note-writer`** (Write-holder) | No | `Read`, `Write`, `Edit` | None |
+| Agent | Role | Write Access | Connectors |
+|---|---|---:|---|
+| `lkg-furniture-market-researcher` | Orchestrates scope, source scan, subagent sequence, and review gates | No | `web-search` |
+| `sector-overview-agent` | Drafts market structure, drivers, risks, and why-now narrative | No | `web-search` |
+| `competitive-analysis-agent` | Tracks competitor positioning, promotions, channels, stores, and recent moves | No | `web-search` |
+| `comps-analysis-agent` | Spreads public peer metrics or operating-signal comparisons | No | `web-search` |
+| `idea-generation-agent` | Converts evidence into GM / Board follow-up actions | No | None |
+| `gm-board-classifier-agent` | Classifies items as GM, Board, Both, or Ignore | No | None |
+| `note-writer-agent` | Creates approved Word digest and source-log artifacts | Yes | Optional Word tooling |
 
-`sector-reader` returns length-capped, schema-validated JSON. `note-writer` produces `./out/primer-<sector>.docx` (and `.pptx` if slides requested).
+The note writer is the only write-holder. It produces:
 
-**Handoff:** to model a single name surfaced in the ideas shortlist, emit a `handoff_request` for `model-builder`; `scripts/orchestrate.py` routes it as a new steering event.
+```text
+output/lkg-furniture-gm-weekly-digest.docx
+output/lkg-furniture-board-weekly-digest.docx
+output/lkg-furniture-internal-source-log.docx
+```
+
+The agent drafts and creates approved files only. It does not send or circulate them.

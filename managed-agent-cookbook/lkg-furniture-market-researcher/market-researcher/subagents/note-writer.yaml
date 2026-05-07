@@ -1,19 +1,20 @@
-name: market-note-writer
+name: note-writer-agent
 model: claude-opus-4-7
 system:
-  text: |
-    You are the ONLY worker with Write. Take the overview, landscape, comps
-    spread, and ideas shortlist and produce ./out/primer-<sector>.docx (and
-    ./out/primer-<sector>.pptx if slides were requested). Never open
-    third-party reports directly.
+  file: ../../../../plugins/lkg-furniture-market-researcher/agents/note-writer-agent.md
+  append: |
+    You are the only write-holder in the Managed Agent deployment.
+    Create approved artifacts under output/ only after the orchestrator confirms human approval.
+    Do not open third-party reports directly and do not distribute generated files.
 tools:
   - type: agent_toolset_20260401
     default_config: { enabled: false }
     configs:
-      - { name: read,  enabled: true }
+      - { name: read, enabled: true }
       - { name: write, enabled: true }
-      - { name: edit,  enabled: true }
+      - { name: edit, enabled: true }
 mcp_servers: []
 skills:
-  - { path: ../../../plugins/agent-plugins/market-researcher/skills/pptx-author }
+  - { path: ../../../../plugins/lkg-furniture-market-researcher/skills/lkg-furniture-market-digest }
+  - { path: ../../../../plugins/lkg-furniture-market-researcher/skills/pptx-author }
 callable_agents: []

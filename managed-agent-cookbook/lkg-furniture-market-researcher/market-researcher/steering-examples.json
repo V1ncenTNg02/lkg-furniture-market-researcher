@@ -1,5 +1,14 @@
 [
-  { "event": "Primer: US data-center power, angle: supply gap", "description": "Thematic primer with angle" },
-  { "event": "Primer: Permian E&P, angle: consolidation", "description": "Sector primer feeding a pitch" },
-  { "event": "Refresh comps only: US LTL freight", "description": "Comps-only refresh of an existing primer" }
+  {
+    "event": "Weekly LKG furniture digest: Australian bedding, mattresses, sleep products, and bedroom furniture; scan the last 7 days of public sources and stop for GM/Board review.",
+    "description": "Default weekly digest with 10-source public scan, routing classifications, and post-approval Word outputs"
+  },
+  {
+    "event": "Competitor watch refresh: promotions, pricing, product launches, delivery offers, and store updates for Snooze, Forty Winks, Bedshed, Harvey Norman, IKEA Australia, Temple & Webster, Adairs, Nick Scali, Freedom, Fantastic Furniture, and Amart Furniture.",
+    "description": "Competitive-analysis-focused run for public competitor signals"
+  },
+  {
+    "event": "GM and Board routing pass: classify new Australian household-goods, bedding, and furniture market signals as GM, Board, Both, or Ignore, with confidence and human-review flags.",
+    "description": "Classifier-focused run for human review and routing decisions"
+  }
 ]

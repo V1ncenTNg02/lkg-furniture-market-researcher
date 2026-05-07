@@ -1,0 +1,16 @@
+name: idea-generation-agent
+model: claude-opus-4-7
+system:
+  file: ../../../../plugins/lkg-furniture-market-researcher/agents/idea-generation-agent.md
+  append: |
+    You are running headless. Return evidence-backed GM and Board follow-up actions only; do not write files.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../../plugins/lkg-furniture-market-researcher/skills/idea-generation }
+callable_agents: []

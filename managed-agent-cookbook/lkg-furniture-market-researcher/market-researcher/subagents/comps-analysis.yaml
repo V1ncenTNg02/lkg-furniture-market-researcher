@@ -1,0 +1,18 @@
+name: comps-analysis-agent
+model: claude-opus-4-7
+system:
+  file: ../../../../plugins/lkg-furniture-market-researcher/agents/comps-analysis-agent.md
+  append: |
+    You are running headless. Return peer metrics or operating-signal comparisons only; do not write files.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: web-search, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: web-search, url: "${WEB_SEARCH_MCP_URL}" }
+skills:
+  - { path: ../../../../plugins/lkg-furniture-market-researcher/skills/comps-analysis }
+callable_agents: []

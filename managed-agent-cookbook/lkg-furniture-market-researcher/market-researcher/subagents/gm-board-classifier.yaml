@@ -1,0 +1,16 @@
+name: gm-board-classifier-agent
+model: claude-opus-4-7
+system:
+  file: ../../../../plugins/lkg-furniture-market-researcher/agents/gm-board-classifier-agent.md
+  append: |
+    You are running headless. Recommend routing only; do not approve, send, or write files.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../../plugins/lkg-furniture-market-researcher/skills/gm-board-classifier }
+callable_agents: []
