@@ -1,6 +1,9 @@
 {
   "name": "lkg-furniture-market-researcher",
   "description": "Marketplace for LKG furniture market research plugins",
+  "owner": {
+    "name": "V1ncenTNg02"
+  },
   "plugins": [
     {
       "name": "lkg-furniture-market-researcher",
