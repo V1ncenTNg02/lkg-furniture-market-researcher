@@ -1,10 +1,22 @@
 # Assumptions
 
-## Interview Scope
+## Template Choice and Rationale
 
-- This project uses Option 1: Market researcher.
-- The chosen sector is Australian bedding, mattresses, sleep products, and bedroom furniture.
-- The LKG-relevant business context is Hypnos Group under LK Group, including Snooze, Future Sleep, and G&G Furniture.
+This project uses Option 1: Market researcher.
+
+The chosen sector is Australian bedding, mattresses, sleep products, and bedroom furniture. The LKG-relevant business context is Hypnos Group under LK Group, including Snooze, Future Sleep, and G&G Furniture.
+
+Why this template and sector:
+
+- Reviewed the LKG website and identified Hypnos Group as a portfolio business with directly relevant retail exposure.
+- The Australian furniture, bedding, and sleep market is well-suited for a public-data agent workflow: competitor prices, promotional activity, investor announcements, and customer demand signals are visible in public sources without requiring proprietary data access.
+- The market researcher template maps naturally onto the LKG use case — weekly digest, competitor watch, GM/Board routing, and Word output are all standard outputs of that template.
+
+Why not Option 2 (strict data pipeline):
+
+- Option 2 is closer to a predefined ETL or ESG data processing pipeline — each step is fixed, validators check the output of the prior step, and the rules are tightly specified.
+- That pattern is well-suited to structured, schema-driven data (e.g. carbon emissions reporting, financial statement ingestion) where the input format is known and the validation logic can be hard-coded.
+- The furniture market digest is more open-ended: sources vary weekly, signals differ in type and materiality, and judgment is required at each step. The market researcher template handles that variability better.
 
 ## Data Assumptions
 
@@ -25,7 +37,10 @@
 ## Output Assumptions
 
 - The primary output is Microsoft Word format.
+- Before generating Word documents, the orchestrator writes all approved research content verbatim to `output/approved-digest-{DD-MM-YYYY}.md`. This is the staging file and the single source of truth for document generation.
+- The note-writer-agent reads from the staging file only. It does not reconstruct or infer content from memory.
 - Post-approval demo outputs are local files with the run date appended as `DD-MM-YYYY`:
+  - `output/approved-digest-{DD-MM-YYYY}.md`
   - `output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx`
   - `output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx`
   - `output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx`

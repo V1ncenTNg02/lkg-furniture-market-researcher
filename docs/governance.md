@@ -23,11 +23,24 @@
 - Final Word artifacts are generated only after human approval.
 - The agent does not send files to GMs or the board.
 
-## Output Governance
+## Staging File Contract
 
-Generated demo outputs (run date appended as `DD-MM-YYYY`):
+Before the note-writer-agent is called, the orchestrator writes all approved research content verbatim to:
 
 ```text
+output/approved-digest-{DD-MM-YYYY}.md
+```
+
+This file is the single source of truth for document generation. The note-writer-agent must read from it and must not reconstruct, infer, or supplement content from memory. If the staging file is missing or empty, the note-writer stops and reports the error to the orchestrator rather than generating content.
+
+This pattern prevents the note-writer from hallucinating research findings it was not given. It also creates an auditable record of exactly what was approved before documents were generated.
+
+## Output Governance
+
+Generated outputs (run date appended as `DD-MM-YYYY`):
+
+```text
+output/approved-digest-{DD-MM-YYYY}.md      ← staging file; source of truth for Word generation
 output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx
 output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx
 output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx

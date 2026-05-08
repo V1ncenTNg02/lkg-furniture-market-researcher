@@ -58,6 +58,24 @@ Original guardrails kept:
 - Stop for analyst review.
 - Do not distribute directly.
 
+## Template Choice and Rationale
+
+This project uses the market researcher template.
+
+The LKG-relevant business chosen is Hypnos Group under LK Group, which includes Snooze, Future Sleep, and G&G Furniture.
+
+Why this template and sector:
+
+- Reviewed the LKG website and identified Hypnos Group as a portfolio business with directly relevant retail exposure.
+- The Australian furniture, bedding, and sleep market is well-suited for a public-data agent: competitor prices, promotional activity, ASX investor announcements, and consumer demand signals are all visible in public sources without proprietary data access.
+- The market researcher template maps naturally onto the use case — weekly digest, competitor watch, GM/Board routing, and Word output are standard outputs of that template.
+
+Why not the strict data pipeline option:
+
+- A strict data pipeline is closer to an ESG data processing workflow: fixed steps, schema-driven input, hard-coded validation rules, and a step-by-step validator after each stage.
+- That pattern suits structured, predictable data where the input format is known in advance.
+- The furniture market digest is more open-ended. Sources vary each week, signals differ in type and materiality, and judgment is needed at each step. The market researcher template handles that variability better.
+
 ## Adaptation Principle
 
 The brief asks us to adapt the Anthropic template, not rebuild an agent from scratch.
@@ -452,22 +470,23 @@ agents/
 
 Before:
 
-- The original `market-researcher` agent invoked skills directly.
+- The original `market-researcher` agent invoked skills directly and owned all steps in one context.
 
 After:
 
-- The `market-researcher` agent delegates each step:
+- The `market-researcher` agent is the orchestrator. Each workflow step is delegated to a focused subagent:
 
 ```text
 market-researcher orchestrator
-  -> lkg-furniture-market-digest skill for 10-source scan requirements
+  -> lkg-furniture-market-digest skill (source scan requirements)
   -> sector-overview-agent
-  -> competitive-analysis-agent
+  -> competitive-analysis-agent      (can run in parallel with sector-overview)
   -> comps-analysis-agent
   -> idea-generation-agent
   -> gm-board-classifier-agent
   -> human review gate
-  -> note-writer-agent
+  -> writes output/approved-digest-{DD-MM-YYYY}.md  ← staging file
+  -> note-writer-agent               (reads staging file; generates Word artifacts)
 ```
 
 Subagent responsibilities:
@@ -477,13 +496,21 @@ Subagent responsibilities:
 - `comps-analysis-agent`: public peer metrics, operating signals, comparable data, and Excel/source-log discipline.
 - `idea-generation-agent`: evidence-backed GM / Board follow-up actions.
 - `gm-board-classifier-agent`: GM / Board / Both / Ignore routing recommendation.
-- `note-writer-agent`: post-approval Word digest/source-log generation.
+- `note-writer-agent`: post-approval Word digest/source-log generation from the staging file.
 
-Why:
+Why subagents:
 
-- This is a meaningful adaptation while preserving the original workflow.
-- The GM/Board classifier directly addresses the brief's request to flag items relevant to a portfolio company GM or the LKG board.
-- In production, multiple research-oriented subagents could run in parallel, such as one for public filings, one for competitor websites, one for ABS/macro data, and one for news.
+- **Clear responsibility boundaries**: each subagent has a defined scope, context, and permission set. No single agent tries to do everything.
+- **Better output quality with less token waste**: a focused agent loads only the context it needs, produces higher-quality output, and does not carry irrelevant prior steps in its window.
+- **Better governance and audit trail**: each subagent call is a discrete unit that can be logged, retried, or replaced independently.
+- **Failure isolation**: if the comps step fails, the sector overview and competitive landscape are preserved.
+- **Parallelism**: research-oriented subagents (e.g. sector overview and competitive landscape) can run concurrently, reducing overall run time.
+
+Why the staging file handoff:
+
+- The note-writer-agent is called after human approval, which may happen in a separate session or agent context.
+- Without a staging file, the note-writer has no reliable access to the approved research and will reconstruct or invent content — producing documents that do not match what was actually researched.
+- Writing `output/approved-digest-{DD-MM-YYYY}.md` before calling the note-writer ensures the Word documents contain exactly what was researched and approved, no more and no less.
 
 ### Web Search Adaptation
 
@@ -660,6 +687,44 @@ After:
 Why:
 
 - The brief requires output in a real tool. The original PowerPoint generation skill is useful and should be preserved.
+
+## Future Updates
+
+These are not implemented but are natural next steps if the workflow moves to production.
+
+### Agents
+
+- **Specialist research agents** broken out by signal type: a pricing agent, a property/store-footprint agent, a supply-chain agent, and a macro/demand agent. Each has its own context, tool permissions, and source list. The orchestrator coordinates them and reconciles conflicts.
+- Parallel execution of independent research agents (sector overview and competitive landscape can run concurrently today; specialist agents would extend this further).
+
+### Skills
+
+- **Cross-week comparison**: update the digest skill to load the previous week's staging file and flag items that are new, changed, escalated, or resolved relative to last week.
+- **Better fallback handling**: if live web search returns empty or low-quality results, the skill should have a more structured fallback — stable URL list, then cached prior-week excerpts, then labelled synthetic demo — with clearer confidence degradation at each stage.
+
+### Connectors
+
+Data sources:
+
+- Replace or supplement the general web search with governed MCPs for ASX announcements, ABS MHSI data tables, competitor investor pages, and retail news feeds.
+- Internal company data where authorised — e.g. Snooze or Future Sleep trading data to contextualise public competitor signals.
+
+Output and distribution:
+
+- **Email MCP**: after approval, automatically send the GM digest to the GM distribution list and the Board digest to the Board distribution list.
+- **File storage MCP**: write approved artifacts to a shared folder or Google Drive for audit and future reference.
+- **Memory / preference DB**: store GM and Board insight preferences so the classifier improves routing accuracy over time and agents can personalise the digest.
+
+Approval and review:
+
+- **Slack MCP**: the responsible manager receives the digest summary in a designated Slack channel, reviews it there, and sends an approval command. On approval the agent continues to document generation and distribution — no need to log into the Claude Platform console.
+- **Approval connector**: integrate with an existing ticketing or workflow system (e.g. Jira, ServiceNow) for a more formal approval audit trail.
+
+### Governance
+
+- Structured run logs per session: agent steps, tool calls, model version, timestamps, source URLs fetched, and token cost.
+- Permission controls at the connector level: who can access which data source and which output channel.
+- Compliance checks: flag items that reference material non-public information or require legal review before circulation.
 
 ## What Was Not Changed
 
