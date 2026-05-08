@@ -2,8 +2,7 @@
 
 This project starts from Anthropic's original `market-researcher` financial-services plugin and applies a light-touch LKG adaptation for Australian bedding, mattresses, sleep products, and bedroom furniture.
 
-> **[Agent System Overview →](agent-system-overview.html)**
-> Interactive diagram showing the full agent workflow, skills, data sources, and development roadmap.
+[![Agent System Overview](docs/agent-system-preview.svg)](https://v1ncentng02.github.io/lkg-furniture-market-researcher/agent-system-overview.html)
 
 The plugin lives in:
 

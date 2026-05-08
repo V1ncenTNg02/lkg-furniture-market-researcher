@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 548" width="900" height="548" font-family="'Segoe UI', system-ui, sans-serif">
+
+  <defs>
+    <linearGradient id="grad-title" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6c8cff"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+    <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="3" refY="8" orient="auto">
+      <path d="M0,0 L6,0 L3,8 z" fill="#6c8cff" opacity="0.8"/>
+    </marker>
+    <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="3" refY="8" orient="auto">
+      <path d="M0,0 L6,0 L3,8 z" fill="#a78bfa" opacity="0.8"/>
+    </marker>
+    <marker id="arr-amber" markerWidth="8" markerHeight="8" refX="3" refY="8" orient="auto">
+      <path d="M0,0 L6,0 L3,8 z" fill="#fbbf24" opacity="0.8"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="8" refX="3" refY="8" orient="auto">
+      <path d="M0,0 L6,0 L3,8 z" fill="#34d399" opacity="0.8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="548" rx="14" fill="#0f1117"/>
+
+  <!-- ── Header ── -->
+  <text x="450" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="url(#grad-title)">LKG Furniture Market Researcher — Agent Workflow</text>
+  <text x="450" y="48" text-anchor="middle" font-size="10.5" fill="#8892b0">Click to open interactive diagram · Sequential steps with parallel research agents</text>
+
+  <!-- ════════════════════════════════════════
+       STEP 1 — Scope & Context (orchestrator)
+  ════════════════════════════════════════ -->
+  <rect x="100" y="60" width="700" height="43" rx="8" fill="#1a1d27" stroke="#6c8cff" stroke-width="1.5"/>
+  <!-- step number circle -->
+  <circle cx="125" cy="81" r="11" fill="rgba(108,140,255,0.18)" stroke="#6c8cff" stroke-width="1.2"/>
+  <text x="125" y="85" text-anchor="middle" font-size="9" font-weight="700" fill="#6c8cff">1</text>
+  <text x="450" y="78" text-anchor="middle" font-size="12" font-weight="700" fill="#6c8cff">Scope &amp; Context Definition</text>
+  <text x="450" y="95" text-anchor="middle" font-size="9" fill="#8892b0">market-researcher orchestrator · lkg-furniture-market-digest skill · 13-competitor watchlist</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="450" y1="103" x2="450" y2="119" stroke="#6c8cff" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-blue)" opacity="0.7"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 2 — Web Source Scan (orchestrator)
+  ════════════════════════════════════════ -->
+  <rect x="100" y="121" width="700" height="43" rx="8" fill="#1a1d27" stroke="#6c8cff" stroke-width="1.5"/>
+  <circle cx="125" cy="142" r="11" fill="rgba(108,140,255,0.18)" stroke="#6c8cff" stroke-width="1.2"/>
+  <text x="125" y="146" text-anchor="middle" font-size="9" font-weight="700" fill="#6c8cff">2</text>
+  <text x="450" y="139" text-anchor="middle" font-size="12" font-weight="700" fill="#6c8cff">Web Source Scan</text>
+  <text x="450" y="156" text-anchor="middle" font-size="9" fill="#8892b0">web_search → stable public URLs → synthetic fallback · up to 10 sources · results passed to all 3 agents</text>
+
+  <!-- ════════════════════════════════════════
+       FORK — from step 2 into parallel agents
+  ════════════════════════════════════════ -->
+  <!-- vertical stem down from step 2 -->
+  <line x1="450" y1="164" x2="450" y2="178" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.7"/>
+  <!-- horizontal bus at y=178 (box 1 center=163, box 2 center=444, box 3 center=731) -->
+  <line x1="163" y1="178" x2="731" y2="178" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <!-- drops from bus down to parallel box tops (y=197) -->
+  <line x1="163" y1="178" x2="163" y2="195" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <line x1="444" y1="178" x2="444" y2="195" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <line x1="731" y1="178" x2="731" y2="195" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- ════════════════════════════════════════
+       PARALLEL CONTAINER
+  ════════════════════════════════════════ -->
+  <rect x="20" y="178" width="860" height="108" rx="10" fill="rgba(167,139,250,0.04)" stroke="#a78bfa" stroke-width="1" stroke-dasharray="5,3"/>
+  <!-- "runs in parallel" label -->
+  <rect x="322" y="182" width="256" height="15" rx="7" fill="rgba(167,139,250,0.14)" stroke="rgba(167,139,250,0.3)" stroke-width="0.8"/>
+  <text x="450" y="193" text-anchor="middle" font-size="8.5" font-weight="600" fill="#a78bfa">⇉  Runs in parallel — triggered simultaneously</text>
+
+  <!-- ── Parallel box 1: sector-overview-agent ── -->
+  <!-- box 1: x=28, w=270, cx=163, top=197, h=82, bottom=279 -->
+  <rect x="28" y="197" width="270" height="82" rx="8" fill="#1a1d27" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,2.5"/>
+  <text x="163" y="215" text-anchor="middle" font-size="10" font-weight="700" fill="#a78bfa">sector-overview-agent</text>
+  <text x="163" y="230" text-anchor="middle" font-size="8.5" fill="#8892b0">Market structure, demand drivers,</text>
+  <text x="163" y="242" text-anchor="middle" font-size="8.5" fill="#8892b0">value chain, why-now narrative</text>
+  <rect x="88" y="252" width="150" height="13" rx="6" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.25)" stroke-width="0.8"/>
+  <text x="163" y="262" text-anchor="middle" font-size="7.5" fill="#34d399">sector-overview skill · web_search</text>
+
+  <!-- ── Parallel box 2: competitive-analysis-agent ── -->
+  <!-- box 2: x=308, w=272, cx=444, top=197, h=82, bottom=279 -->
+  <rect x="308" y="197" width="272" height="82" rx="8" fill="#1a1d27" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,2.5"/>
+  <text x="444" y="215" text-anchor="middle" font-size="10" font-weight="700" fill="#a78bfa">competitive-analysis-agent</text>
+  <text x="444" y="230" text-anchor="middle" font-size="8.5" fill="#8892b0">13 competitor moves, promotions,</text>
+  <text x="444" y="242" text-anchor="middle" font-size="8.5" fill="#8892b0">store signals, investor commentary</text>
+  <rect x="364" y="252" width="160" height="13" rx="6" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.25)" stroke-width="0.8"/>
+  <text x="444" y="262" text-anchor="middle" font-size="7.5" fill="#34d399">competitive-analysis skill · web_search</text>
+
+  <!-- ── Parallel box 3: comps-analysis-agent ── -->
+  <!-- box 3: x=590, w=282, cx=731, top=197, h=82, bottom=279 -->
+  <rect x="590" y="197" width="282" height="82" rx="8" fill="#1a1d27" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4,2.5"/>
+  <text x="731" y="215" text-anchor="middle" font-size="10" font-weight="700" fill="#a78bfa">comps-analysis-agent</text>
+  <text x="731" y="230" text-anchor="middle" font-size="8.5" fill="#8892b0">Peer operating benchmarks, margins,</text>
+  <text x="731" y="242" text-anchor="middle" font-size="8.5" fill="#8892b0">sales growth, promotional intensity</text>
+  <rect x="651" y="252" width="160" height="13" rx="6" fill="rgba(52,211,153,0.1)" stroke="rgba(52,211,153,0.25)" stroke-width="0.8"/>
+  <text x="731" y="262" text-anchor="middle" font-size="7.5" fill="#34d399">comps-analysis skill · web_search</text>
+
+  <!-- ════════════════════════════════════════
+       JOIN — from parallel agents into step 4
+  ════════════════════════════════════════ -->
+  <!-- rises from box bottoms (y=279) to join bus (y=293) -->
+  <line x1="163" y1="279" x2="163" y2="293" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <line x1="444" y1="279" x2="444" y2="293" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <line x1="731" y1="279" x2="731" y2="293" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <!-- horizontal join bus at y=293 -->
+  <line x1="163" y1="293" x2="731" y2="293" stroke="#a78bfa" stroke-width="1.5" opacity="0.6"/>
+  <!-- stem from join bus to step 4 (with arrowhead) -->
+  <line x1="450" y1="293" x2="450" y2="307" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-purple)" opacity="0.8"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 4 — Idea Generation (after parallel)
+  ════════════════════════════════════════ -->
+  <rect x="100" y="309" width="700" height="43" rx="8" fill="#1a1d27" stroke="#a78bfa" stroke-width="1.5"/>
+  <circle cx="125" cy="330" r="11" fill="rgba(167,139,250,0.18)" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="125" y="334" text-anchor="middle" font-size="9" font-weight="700" fill="#a78bfa">4</text>
+  <text x="450" y="327" text-anchor="middle" font-size="12" font-weight="700" fill="#a78bfa">Ideas Shortlist</text>
+  <text x="450" y="344" text-anchor="middle" font-size="9" fill="#8892b0">idea-generation-agent · synthesises sector + competitive + comps outputs → GM/Board follow-up actions</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="450" y1="352" x2="450" y2="366" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-purple)" opacity="0.7"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 5 — GM/Board Classification
+  ════════════════════════════════════════ -->
+  <rect x="100" y="368" width="700" height="43" rx="8" fill="#1a1d27" stroke="#a78bfa" stroke-width="1.5"/>
+  <circle cx="125" cy="389" r="11" fill="rgba(167,139,250,0.18)" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="125" y="393" text-anchor="middle" font-size="9" font-weight="700" fill="#a78bfa">5</text>
+  <text x="450" y="386" text-anchor="middle" font-size="12" font-weight="700" fill="#a78bfa">GM / Board Classification</text>
+  <text x="450" y="403" text-anchor="middle" font-size="9" fill="#8892b0">gm-board-classifier-agent · classifies all signals as GM · Board · Both · Ignore — advisory only</text>
+
+  <!-- Arrow 5→6 -->
+  <line x1="450" y1="411" x2="450" y2="425" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-amber)" opacity="0.7"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 6 — Human Review Gate
+  ════════════════════════════════════════ -->
+  <rect x="100" y="427" width="700" height="43" rx="8" fill="#1a1d27" stroke="#fbbf24" stroke-width="1.8"/>
+  <circle cx="125" cy="448" r="11" fill="rgba(251,191,36,0.18)" stroke="#fbbf24" stroke-width="1.2"/>
+  <text x="125" y="452" text-anchor="middle" font-size="9" font-weight="700" fill="#fbbf24">6</text>
+  <text x="450" y="445" text-anchor="middle" font-size="12" font-weight="700" fill="#fbbf24">Human Review Gate</text>
+  <text x="450" y="462" text-anchor="middle" font-size="9" fill="#8892b0">Mandatory pause · approve · edit · suppress · reclassify — no output generated or distributed without approval</text>
+
+  <!-- Arrow 6→7 -->
+  <line x1="450" y1="470" x2="450" y2="484" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr-green)" opacity="0.7"/>
+
+  <!-- ════════════════════════════════════════
+       STEP 7 — Word Output
+  ════════════════════════════════════════ -->
+  <rect x="100" y="486" width="700" height="43" rx="8" fill="#1a1d27" stroke="#34d399" stroke-width="1.8"/>
+  <circle cx="125" cy="507" r="11" fill="rgba(52,211,153,0.18)" stroke="#34d399" stroke-width="1.2"/>
+  <text x="125" y="511" text-anchor="middle" font-size="9" font-weight="700" fill="#34d399">7</text>
+  <text x="450" y="504" text-anchor="middle" font-size="12" font-weight="700" fill="#34d399">Word Output Generation</text>
+  <text x="450" y="521" text-anchor="middle" font-size="9" fill="#8892b0">note-writer-agent · gm-digest-DD-MM-YYYY.docx · board-digest-DD-MM-YYYY.docx · source-log · pptx optional</text>
+
+  <!-- ── Data sources strip ── -->
+  <rect x="20" y="535" width="860" height="7" rx="3" fill="#1a1d27" stroke="#2e3250" stroke-width="0.8"/>
+  <text x="450" y="542" text-anchor="middle" font-size="7.5" fill="#4a5568">
+    Data: Snooze · Forty Winks · Harvey Norman · Temple &amp; Webster · Adairs · Nick Scali · IKEA Australia · ABS Retail Trade · ASX Announcements · Inside Retail Australia
+  </text>
+
+</svg>

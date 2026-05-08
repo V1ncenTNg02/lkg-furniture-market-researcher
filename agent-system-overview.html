@@ -169,6 +169,88 @@
     /* last step has no bottom line */
     .workflow-step:last-child .step-line { display: none; }
 
+    /* ── Parallel Band ── */
+    .parallel-band {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 4px;
+    }
+    .parallel-spine {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 48px;
+      flex-shrink: 0;
+    }
+    .parallel-fork {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      background: rgba(167,139,250,0.15);
+      border: 2px solid var(--accent2);
+      color: var(--accent2);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .parallel-spine-line {
+      width: 2px;
+      flex: 1;
+      min-height: 24px;
+      background: linear-gradient(to bottom, var(--accent2), var(--border));
+    }
+    .parallel-content {
+      flex: 1;
+      margin-left: 16px;
+      margin-bottom: 4px;
+    }
+    .parallel-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 7px 14px;
+      background: rgba(167,139,250,0.07);
+      border: 1px solid rgba(167,139,250,0.25);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent2);
+      letter-spacing: 0.02em;
+    }
+    .parallel-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 700px) { .parallel-row { grid-template-columns: 1fr; } }
+    .parallel-card {
+      background: var(--surface);
+      border: 1px dashed rgba(167,139,250,0.35);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      transition: border-color 0.2s, border-style 0.2s;
+    }
+    .parallel-card:hover { border-color: var(--accent2); border-style: solid; }
+    .parallel-card-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+    .parallel-card-body {
+      color: var(--muted);
+      font-size: 0.81rem;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
     /* ── Agent Grid ── */
     .agent-grid {
       display: grid;
@@ -333,7 +415,7 @@
     <div style="margin-top: 12px;">
       <span class="badge badge-blue">Claude Sonnet 4.6</span>
       <span class="badge badge-purple">6 Subagents</span>
-      <span class="badge badge-green">7-Step Workflow</span>
+      <span class="badge badge-green">Parallel Research Agents</span>
       <span class="badge badge-amber">Human-in-the-Loop</span>
       <span class="badge badge-red">Public Data Only</span>
     </div>
@@ -344,11 +426,11 @@
   ══════════════════════════════════════════════════ -->
   <section>
     <div class="section-label">Section 1</div>
-    <div class="section-title">Agent Workflow — Step-by-Step</div>
+    <div class="section-title">Agent Workflow — Sequential &amp; Parallel Execution</div>
 
     <div class="workflow">
 
-      <!-- Step 1 -->
+      <!-- Step 1: Scope -->
       <div class="workflow-step color-orchestrator">
         <div class="step-spine">
           <div class="step-circle">1</div>
@@ -369,51 +451,81 @@
         </div>
       </div>
 
-      <!-- Step 2 -->
-      <div class="workflow-step color-agent">
+      <!-- Step 2: Web Source Scan -->
+      <div class="workflow-step color-orchestrator">
         <div class="step-spine">
           <div class="step-circle">2</div>
           <div class="step-line"></div>
         </div>
         <div class="step-card">
           <div class="step-card-header">
-            <div class="step-card-title">Sector Overview</div>
-            <span class="badge badge-purple">Subagent</span>
+            <div class="step-card-title">Web Source Scan</div>
+            <span class="badge badge-blue">Orchestrator</span>
           </div>
           <div class="step-card-body">
-            Delegates to <strong>sector-overview-agent</strong>. Drafts market structure, value chain, demand drivers, supply-chain signals, and why-now narrative. Uses web_search → stable URL fallback → synthetic fallback (labelled). Returns findings with source citations and review flags.
+            The orchestrator runs <code>web_search</code> and <code>web_fetch</code> to gather up to 10 relevant public sources — competitor sites, ASX announcements, investor pages, ABS data, and retail news. Fallback sequence: live search → stable public URLs → labelled synthetic demo fallback. Raw source material is then handed to the three research subagents simultaneously.
           </div>
           <div class="step-meta">
-            <span class="badge badge-purple">sector-overview-agent</span>
-            <span class="badge badge-blue">sector-overview skill</span>
-            <span class="badge badge-green">web_search · web_fetch</span>
+            <span class="badge badge-green">web_search</span>
+            <span class="badge badge-green">web_fetch</span>
+            <span class="badge badge-blue">lkg-furniture-market-digest skill</span>
           </div>
         </div>
       </div>
 
-      <!-- Step 3 -->
-      <div class="workflow-step color-agent">
-        <div class="step-spine">
-          <div class="step-circle">3</div>
-          <div class="step-line"></div>
+      <!-- Step 3: PARALLEL research agents -->
+      <div class="parallel-band">
+        <div class="parallel-spine">
+          <div class="parallel-fork">⇉</div>
+          <div class="parallel-spine-line"></div>
         </div>
-        <div class="step-card">
-          <div class="step-card-header">
-            <div class="step-card-title">Competitive Landscape</div>
-            <span class="badge badge-purple">Subagent</span>
+        <div class="parallel-content">
+          <div class="parallel-label">
+            ⇉ &nbsp;Runs in parallel — all three triggered simultaneously once source scan results are available
           </div>
-          <div class="step-card-body">
-            Delegates to <strong>competitive-analysis-agent</strong>. Maps competitor moves — promotions, store changes, range updates, online signals, investor commentary. Each signal includes: what happened, source, why it matters, GM/Board relevance, confidence, and human-review flag.
-          </div>
-          <div class="step-meta">
-            <span class="badge badge-purple">competitive-analysis-agent</span>
-            <span class="badge badge-blue">competitive-analysis skill</span>
-            <span class="badge badge-green">web_search · web_fetch</span>
+          <div class="parallel-row">
+
+            <!-- sector-overview-agent -->
+            <div class="parallel-card">
+              <div class="parallel-card-title">sector-overview-agent</div>
+              <div class="parallel-card-body">
+                Drafts market structure, value chain, demand drivers, supply-chain signals, and why-now narrative for AU bedding &amp; bedroom furniture. Returns findings with source citations and review flags.
+              </div>
+              <div class="step-meta">
+                <span class="badge badge-purple">sector-overview skill</span>
+                <span class="badge badge-green">web_search · web_fetch</span>
+              </div>
+            </div>
+
+            <!-- competitive-analysis-agent -->
+            <div class="parallel-card">
+              <div class="parallel-card-title">competitive-analysis-agent</div>
+              <div class="parallel-card-body">
+                Maps 13 competitor moves — promotions, store changes, range updates, online signals, investor commentary. Each signal includes source, why it matters, GM/Board relevance, and confidence.
+              </div>
+              <div class="step-meta">
+                <span class="badge badge-purple">competitive-analysis skill</span>
+                <span class="badge badge-green">web_search · web_fetch</span>
+              </div>
+            </div>
+
+            <!-- comps-analysis-agent -->
+            <div class="parallel-card">
+              <div class="parallel-card-title">comps-analysis-agent</div>
+              <div class="parallel-card-body">
+                Builds operating-signal benchmarks for public furniture/home-retail peers (sales growth, margins, inventory, online mix, promotional intensity) with consistent definitions and outlier flags.
+              </div>
+              <div class="step-meta">
+                <span class="badge badge-purple">comps-analysis skill</span>
+                <span class="badge badge-green">web_search · web_fetch</span>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
 
-      <!-- Step 4 -->
+      <!-- Step 4: Idea Generation — after parallel agents return -->
       <div class="workflow-step color-agent">
         <div class="step-spine">
           <div class="step-circle">4</div>
@@ -421,21 +533,22 @@
         </div>
         <div class="step-card">
           <div class="step-card-header">
-            <div class="step-card-title">Peer Comps &amp; Operating Signals</div>
+            <div class="step-card-title">Ideas Shortlist</div>
             <span class="badge badge-purple">Subagent</span>
+            <span class="badge badge-blue">After parallel results collected</span>
           </div>
           <div class="step-card-body">
-            Delegates to <strong>comps-analysis-agent</strong>. Builds comparable operating-signal benchmarks for public furniture/home-retail peers (sales growth, margins, inventory, online sales, promotional intensity). Preserves spreadsheet discipline: consistent peer set, formulas, source hierarchy.
+            Once all three parallel agents return, the orchestrator delegates to <strong>idea-generation-agent</strong>. It synthesises the combined sector, competitive, and comps findings into evidence-backed GM and Board follow-up actions (promotion response, range review, inventory check, board watch items). Each idea includes evidence, why it matters, suggested audience, risk-if-ignored, and recommended next step.
           </div>
           <div class="step-meta">
-            <span class="badge badge-purple">comps-analysis-agent</span>
-            <span class="badge badge-blue">comps-analysis skill</span>
-            <span class="badge badge-green">web_search · web_fetch</span>
+            <span class="badge badge-purple">idea-generation-agent</span>
+            <span class="badge badge-blue">idea-generation skill</span>
+            <span class="badge badge-green">Read · Write · Edit</span>
           </div>
         </div>
       </div>
 
-      <!-- Step 5 -->
+      <!-- Step 5: GM/Board Classifier -->
       <div class="workflow-step color-agent">
         <div class="step-spine">
           <div class="step-circle">5</div>
@@ -443,44 +556,25 @@
         </div>
         <div class="step-card">
           <div class="step-card-header">
-            <div class="step-card-title">Ideas Shortlist</div>
-            <span class="badge badge-purple">Subagent</span>
-          </div>
-          <div class="step-card-body">
-            Delegates to <strong>idea-generation-agent</strong>. Generates evidence-backed GM and Board follow-up actions (promotion response, range review, inventory check, board watch items). Each idea has: evidence, why it matters, suggested audience, risk-if-ignored, recommended next step.
-          </div>
-          <div class="step-meta">
-            <span class="badge badge-purple">idea-generation-agent</span>
-            <span class="badge badge-blue">idea-generation skill</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 6 -->
-      <div class="workflow-step color-agent">
-        <div class="step-spine">
-          <div class="step-circle">6</div>
-          <div class="step-line"></div>
-        </div>
-        <div class="step-card">
-          <div class="step-card-header">
             <div class="step-card-title">GM / Board Classification</div>
             <span class="badge badge-purple">Subagent</span>
+            <span class="badge badge-blue">After ideas are produced</span>
           </div>
           <div class="step-card-body">
-            Delegates to <strong>gm-board-classifier-agent</strong>. Routes every material signal as <strong>GM</strong> (operational/tactical), <strong>Board</strong> (strategic/risk), <strong>Both</strong>, or <strong>Ignore</strong>. Classification is advisory — no distribution without human approval.
+            Delegates to <strong>gm-board-classifier-agent</strong>. Takes all signals from sector overview, competitive analysis, comps, and ideas. Routes every material item as <strong>GM</strong> (operational/tactical), <strong>Board</strong> (strategic/risk), <strong>Both</strong>, or <strong>Ignore</strong>. Classification is advisory — no distribution without human approval.
           </div>
           <div class="step-meta">
             <span class="badge badge-purple">gm-board-classifier-agent</span>
             <span class="badge badge-blue">gm-board-classifier skill</span>
+            <span class="badge badge-green">Read · Write · Edit</span>
           </div>
         </div>
       </div>
 
-      <!-- Step 7 -->
+      <!-- Step 6: Human Review Gate -->
       <div class="workflow-step color-human">
         <div class="step-spine">
-          <div class="step-circle">7</div>
+          <div class="step-circle">6</div>
           <div class="step-line"></div>
         </div>
         <div class="step-card">
@@ -490,7 +584,7 @@
             <span class="badge badge-red">Mandatory</span>
           </div>
           <div class="step-card-body">
-            The orchestrator presents a classified draft and pauses for human approval. The reviewer controls: item approval, classification overrides, edits to interpretation, suppression of weak items, and the final circulation decision. No output is generated or sent until this gate is cleared.
+            The orchestrator presents the fully classified draft and pauses for human approval. The reviewer controls: item approval, classification overrides, edits to interpretation, suppression of weak items, and the final circulation decision. No output is generated or sent until this gate is cleared.
           </div>
           <div class="step-meta">
             <span class="badge badge-amber">Human Reviewer</span>
@@ -499,10 +593,10 @@
         </div>
       </div>
 
-      <!-- Step 8 -->
+      <!-- Step 7: Word Output -->
       <div class="workflow-step color-output">
         <div class="step-spine">
-          <div class="step-circle">8</div>
+          <div class="step-circle">7</div>
           <div class="step-line"></div>
         </div>
         <div class="step-card">
@@ -511,7 +605,7 @@
             <span class="badge badge-green">Output</span>
           </div>
           <div class="step-card-body">
-            Delegates to <strong>note-writer-agent</strong>. Assembles approved content into three Microsoft Word artifacts: <em>GM Weekly Digest</em>, <em>Board Weekly Digest</em>, and <em>Internal Source Log</em>. Optionally hands off to <strong>pptx-author</strong> for slide output. Files written to <code>output/</code> folder.
+            Delegates to <strong>note-writer-agent</strong>. Assembles approved content into three Microsoft Word artifacts with the run date appended as <code>DD-MM-YYYY</code>: <em>GM Weekly Digest</em>, <em>Board Weekly Digest</em>, and <em>Internal Source Log</em>. Optionally hands off to <strong>pptx-author</strong> for slide output.
           </div>
           <div class="step-meta">
             <span class="badge badge-purple">note-writer-agent</span>
