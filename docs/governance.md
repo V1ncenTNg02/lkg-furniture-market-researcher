@@ -25,12 +25,12 @@
 
 ## Output Governance
 
-Generated demo outputs:
+Generated demo outputs (run date appended as `DD-MM-YYYY`):
 
 ```text
-output/lkg-furniture-gm-weekly-digest.docx
-output/lkg-furniture-board-weekly-digest.docx
-output/lkg-furniture-internal-source-log.docx
+output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx
 ```
 
 Each output should include:

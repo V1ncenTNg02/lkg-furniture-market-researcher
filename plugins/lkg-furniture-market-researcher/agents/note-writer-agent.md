@@ -27,12 +27,22 @@ Default output is a weekly digest / research note with:
 
 After the human reviewer approves the classified draft, generate Microsoft Word outputs.
 
+Resolve the run date at the time of output generation. Format it as `DD-MM-YYYY` (e.g. `08-05-2026`). Append it as a suffix to each filename before the `.docx` extension.
+
 Default local file outputs:
 
 ```text
-output/lkg-furniture-gm-weekly-digest.docx
-output/lkg-furniture-board-weekly-digest.docx
-output/lkg-furniture-internal-source-log.docx
+output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx
+```
+
+Example for a run on 8 May 2026:
+
+```text
+output/lkg-furniture-gm-weekly-digest-08-05-2026.docx
+output/lkg-furniture-board-weekly-digest-08-05-2026.docx
+output/lkg-furniture-internal-source-log-08-05-2026.docx
 ```
 
 If Microsoft Word add-in / Office tooling is available, create or update the Word documents through that tool. If Word tooling is not available, write local `.docx` artifacts in the `output/` folder.

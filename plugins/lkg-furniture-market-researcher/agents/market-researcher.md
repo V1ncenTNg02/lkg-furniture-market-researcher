@@ -43,10 +43,10 @@ Given a sector or theme and a one-line angle, you deliver:
 6. **Surface ideas.** Delegate to `idea-generation-agent`, which uses `idea-generation` to shortlist evidence-backed GM / Board follow-up actions.
 7. **Classify relevance.** Delegate to `gm-board-classifier-agent` to classify material items as GM / Board / Both / Ignore and explain the routing recommendation.
 8. **Human review gate.** Stop and surface the classified draft for human approval. The human reviewer decides which items are approved, edited, suppressed, or routed to GM / Board audiences.
-9. **Generate approved Word outputs.** Delegate to `note-writer-agent` to format the approved draft as Microsoft Word artifacts:
-   - `output/lkg-furniture-gm-weekly-digest.docx`
-   - `output/lkg-furniture-board-weekly-digest.docx`
-   - `output/lkg-furniture-internal-source-log.docx`
+9. **Generate approved Word outputs.** Delegate to `note-writer-agent` to format the approved draft as Microsoft Word artifacts. The agent appends the run date as `DD-MM-YYYY` suffix to each filename:
+   - `output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx`
+   - `output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx`
+   - `output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx`
    Invoke `pptx-author` only if slides are asked for.
 
 ## Subagent Boundaries

@@ -30,10 +30,10 @@ Use the `lkg-furniture-market-researcher` agent and follow this flow:
    - show sources, confidence, and review flags
    - ask for approval before final output generation
 
-5. After human approval, delegate to `note-writer-agent` to generate:
-   - `output/lkg-furniture-gm-weekly-digest.docx`
-   - `output/lkg-furniture-board-weekly-digest.docx`
-   - `output/lkg-furniture-internal-source-log.docx`
+5. After human approval, delegate to `note-writer-agent` to generate (with run date suffix `DD-MM-YYYY`):
+   - `output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx`
+   - `output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx`
+   - `output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx`
 
 Rules:
 

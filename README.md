@@ -2,6 +2,9 @@
 
 This project starts from Anthropic's original `market-researcher` financial-services plugin and applies a light-touch LKG adaptation for Australian bedding, mattresses, sleep products, and bedroom furniture.
 
+> **[Agent System Overview →](agent-system-overview.html)**
+> Interactive diagram showing the full agent workflow, skills, data sources, and development roadmap.
+
 The plugin lives in:
 
 ```text
@@ -143,12 +146,12 @@ The live workflow should:
 5. Stop for human review before final circulation.
 6. Generate approved Word artifacts when running in an environment with file write / Word output support.
 
-The expected local Word outputs are:
+The expected local Word outputs (with run date suffix `DD-MM-YYYY`):
 
 ```text
-output/lkg-furniture-gm-weekly-digest.docx
-output/lkg-furniture-board-weekly-digest.docx
-output/lkg-furniture-internal-source-log.docx
+output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx
 ```
 
 The agent drafts files only. It does not send them to GMs or the board.
@@ -303,19 +306,19 @@ Purpose:
 
 After human approval, the plugin now has an explicit Microsoft Word output contract.
 
-Generated local Word files:
+Generated local Word files (run date appended as `DD-MM-YYYY`, e.g. `08-05-2026`):
 
 ```text
-output/lkg-furniture-gm-weekly-digest.docx
-output/lkg-furniture-board-weekly-digest.docx
-output/lkg-furniture-internal-source-log.docx
+output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx
 ```
 
 Purpose:
 
-- `lkg-furniture-gm-weekly-digest.docx`: operational GM-facing digest.
-- `lkg-furniture-board-weekly-digest.docx`: strategic board-facing digest.
-- `lkg-furniture-internal-source-log.docx`: internal review/source log covering classifications, source URLs, confidence, human decisions, and suppressed/ignored items.
+- `lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx`: operational GM-facing digest.
+- `lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx`: strategic board-facing digest.
+- `lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx`: internal review/source log covering classifications, source URLs, confidence, human decisions, and suppressed/ignored items.
 
 Rules:
 

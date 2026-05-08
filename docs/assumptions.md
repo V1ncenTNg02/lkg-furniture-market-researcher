@@ -25,10 +25,10 @@
 ## Output Assumptions
 
 - The primary output is Microsoft Word format.
-- Post-approval demo outputs are local files:
-  - `output/lkg-furniture-gm-weekly-digest.docx`
-  - `output/lkg-furniture-board-weekly-digest.docx`
-  - `output/lkg-furniture-internal-source-log.docx`
+- Post-approval demo outputs are local files with the run date appended as `DD-MM-YYYY`:
+  - `output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx`
+  - `output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx`
+  - `output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx`
 - The agent drafts files only. It does not send files to GMs or the board.
 
 ## Human Review Assumptions

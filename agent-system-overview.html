@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LKG Furniture Market Researcher — Agent System Overview</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --accent: #6c8cff;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --text: #e2e8f0;
+      --muted: #8892b0;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 40px 24px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .page-header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin: 2px;
+    }
+    .badge-blue { background: rgba(108,140,255,0.15); color: var(--accent); border: 1px solid rgba(108,140,255,0.3); }
+    .badge-purple { background: rgba(167,139,250,0.15); color: var(--accent2); border: 1px solid rgba(167,139,250,0.3); }
+    .badge-green { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+    .badge-amber { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+    .badge-red { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+
+    /* ── Section ── */
+    section { margin-bottom: 56px; }
+    .section-label {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--text);
+    }
+
+    /* ── Workflow ── */
+    .workflow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .workflow-step {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .step-spine {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 48px;
+      flex-shrink: 0;
+    }
+    .step-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .step-line {
+      width: 2px;
+      flex: 1;
+      min-height: 24px;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 4px;
+      flex: 1;
+      margin-left: 16px;
+      transition: border-color 0.2s;
+    }
+    .step-card:hover { border-color: var(--accent); }
+
+    .step-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .step-card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .step-card-body {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .step-meta {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .color-orchestrator .step-circle { background: rgba(108,140,255,0.2); color: var(--accent); border: 2px solid var(--accent); }
+    .color-orchestrator .step-line { background: linear-gradient(to bottom, var(--accent), var(--border)); }
+
+    .color-agent .step-circle { background: rgba(167,139,250,0.2); color: var(--accent2); border: 2px solid var(--accent2); }
+    .color-agent .step-line { background: linear-gradient(to bottom, var(--accent2), var(--border)); }
+
+    .color-human .step-circle { background: rgba(251,191,36,0.2); color: var(--amber); border: 2px solid var(--amber); }
+    .color-human .step-line { background: linear-gradient(to bottom, var(--amber), var(--border)); }
+
+    .color-output .step-circle { background: rgba(52,211,153,0.2); color: var(--green); border: 2px solid var(--green); }
+    .color-output .step-line { background: linear-gradient(to bottom, var(--green), var(--border)); }
+
+    /* last step has no bottom line */
+    .workflow-step:last-child .step-line { display: none; }
+
+    /* ── Agent Grid ── */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .agent-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    .agent-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .agent-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .agent-card-name { font-weight: 700; font-size: 0.9rem; }
+    .agent-card-role { color: var(--muted); font-size: 0.75rem; }
+    .agent-card-desc { color: var(--muted); font-size: 0.82rem; margin-bottom: 12px; }
+    .agent-section-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; }
+
+    /* ── Data Sources ── */
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .source-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .source-card-title {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .source-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    .source-card li {
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    .source-card li:last-child { border-bottom: none; }
+    .source-card li::before { content: "›"; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Roadmap ── */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .roadmap-phase {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .roadmap-phase-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .phase-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .phase-title { font-weight: 700; font-size: 0.9rem; }
+    .roadmap-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .roadmap-item:last-child { border-bottom: none; }
+    .roadmap-item-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+    .roadmap-item-text { font-size: 0.82rem; color: var(--muted); }
+    .roadmap-item-title { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+
+    /* ── Memory & Governance ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .info-card-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-list {
+      list-style: none;
+      padding: 0;
+    }
+    .info-list li {
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .info-list li:last-child { border-bottom: none; }
+    .info-list li span.icon { flex-shrink: 0; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Page Header ── -->
+  <div class="page-header">
+    <h1>LKG Furniture Market Researcher</h1>
+    <p>Agent System Overview — Architecture, Skills, Data Sources &amp; Development Roadmap</p>
+    <div style="margin-top: 12px;">
+      <span class="badge badge-blue">Claude Sonnet 4.6</span>
+      <span class="badge badge-purple">6 Subagents</span>
+      <span class="badge badge-green">7-Step Workflow</span>
+      <span class="badge badge-amber">Human-in-the-Loop</span>
+      <span class="badge badge-red">Public Data Only</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SECTION 1 — WORKFLOW
+  ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Section 1</div>
+    <div class="section-title">Agent Workflow — Step-by-Step</div>
+
+    <div class="workflow">
+
+      <!-- Step 1 -->
+      <div class="workflow-step color-orchestrator">
+        <div class="step-spine">
+          <div class="step-circle">1</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Scope &amp; Context Definition</div>
+            <span class="badge badge-blue">Orchestrator</span>
+          </div>
+          <div class="step-card-body">
+            The <strong>market-researcher</strong> orchestrator sets the research scope (Australian bedding, mattresses, sleep products, bedroom furniture) and defines the watchlist of 13 competitors. It invokes the <code>lkg-furniture-market-digest</code> skill for context framing and source-mix rules.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-blue">market-researcher</span>
+            <span class="badge badge-purple">lkg-furniture-market-digest skill</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="workflow-step color-agent">
+        <div class="step-spine">
+          <div class="step-circle">2</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Sector Overview</div>
+            <span class="badge badge-purple">Subagent</span>
+          </div>
+          <div class="step-card-body">
+            Delegates to <strong>sector-overview-agent</strong>. Drafts market structure, value chain, demand drivers, supply-chain signals, and why-now narrative. Uses web_search → stable URL fallback → synthetic fallback (labelled). Returns findings with source citations and review flags.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-purple">sector-overview-agent</span>
+            <span class="badge badge-blue">sector-overview skill</span>
+            <span class="badge badge-green">web_search · web_fetch</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="workflow-step color-agent">
+        <div class="step-spine">
+          <div class="step-circle">3</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Competitive Landscape</div>
+            <span class="badge badge-purple">Subagent</span>
+          </div>
+          <div class="step-card-body">
+            Delegates to <strong>competitive-analysis-agent</strong>. Maps competitor moves — promotions, store changes, range updates, online signals, investor commentary. Each signal includes: what happened, source, why it matters, GM/Board relevance, confidence, and human-review flag.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-purple">competitive-analysis-agent</span>
+            <span class="badge badge-blue">competitive-analysis skill</span>
+            <span class="badge badge-green">web_search · web_fetch</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="workflow-step color-agent">
+        <div class="step-spine">
+          <div class="step-circle">4</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Peer Comps &amp; Operating Signals</div>
+            <span class="badge badge-purple">Subagent</span>
+          </div>
+          <div class="step-card-body">
+            Delegates to <strong>comps-analysis-agent</strong>. Builds comparable operating-signal benchmarks for public furniture/home-retail peers (sales growth, margins, inventory, online sales, promotional intensity). Preserves spreadsheet discipline: consistent peer set, formulas, source hierarchy.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-purple">comps-analysis-agent</span>
+            <span class="badge badge-blue">comps-analysis skill</span>
+            <span class="badge badge-green">web_search · web_fetch</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="workflow-step color-agent">
+        <div class="step-spine">
+          <div class="step-circle">5</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Ideas Shortlist</div>
+            <span class="badge badge-purple">Subagent</span>
+          </div>
+          <div class="step-card-body">
+            Delegates to <strong>idea-generation-agent</strong>. Generates evidence-backed GM and Board follow-up actions (promotion response, range review, inventory check, board watch items). Each idea has: evidence, why it matters, suggested audience, risk-if-ignored, recommended next step.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-purple">idea-generation-agent</span>
+            <span class="badge badge-blue">idea-generation skill</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="workflow-step color-agent">
+        <div class="step-spine">
+          <div class="step-circle">6</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">GM / Board Classification</div>
+            <span class="badge badge-purple">Subagent</span>
+          </div>
+          <div class="step-card-body">
+            Delegates to <strong>gm-board-classifier-agent</strong>. Routes every material signal as <strong>GM</strong> (operational/tactical), <strong>Board</strong> (strategic/risk), <strong>Both</strong>, or <strong>Ignore</strong>. Classification is advisory — no distribution without human approval.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-purple">gm-board-classifier-agent</span>
+            <span class="badge badge-blue">gm-board-classifier skill</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7 -->
+      <div class="workflow-step color-human">
+        <div class="step-spine">
+          <div class="step-circle">7</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Human Review Gate</div>
+            <span class="badge badge-amber">Human-in-the-Loop</span>
+            <span class="badge badge-red">Mandatory</span>
+          </div>
+          <div class="step-card-body">
+            The orchestrator presents a classified draft and pauses for human approval. The reviewer controls: item approval, classification overrides, edits to interpretation, suppression of weak items, and the final circulation decision. No output is generated or sent until this gate is cleared.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-amber">Human Reviewer</span>
+            <span class="badge badge-red">No auto-distribute</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8 -->
+      <div class="workflow-step color-output">
+        <div class="step-spine">
+          <div class="step-circle">8</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-card">
+          <div class="step-card-header">
+            <div class="step-card-title">Word Output Generation</div>
+            <span class="badge badge-green">Output</span>
+          </div>
+          <div class="step-card-body">
+            Delegates to <strong>note-writer-agent</strong>. Assembles approved content into three Microsoft Word artifacts: <em>GM Weekly Digest</em>, <em>Board Weekly Digest</em>, and <em>Internal Source Log</em>. Optionally hands off to <strong>pptx-author</strong> for slide output. Files written to <code>output/</code> folder.
+          </div>
+          <div class="step-meta">
+            <span class="badge badge-purple">note-writer-agent</span>
+            <span class="badge badge-blue">pptx-author skill (optional)</span>
+            <span class="badge badge-green">Word · PPTX output</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SECTION 2 — AGENTS & SKILLS
+  ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Section 2</div>
+    <div class="section-title">Agents &amp; Their Skills</div>
+
+    <div class="agent-grid">
+
+      <!-- Orchestrator -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(108,140,255,0.15);">🎯</div>
+          <div>
+            <div class="agent-card-name">market-researcher</div>
+            <div class="agent-card-role">Orchestrator Agent</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Controls the 7-step workflow end-to-end. Delegates each major step to a specialized subagent. Enforces the human approval gate before any output is created or distributed.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-blue">lkg-furniture-market-digest</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Grep · Glob</span>
+          <span class="badge badge-green">web_search · web_fetch</span>
+        </div>
+      </div>
+
+      <!-- Sector Overview -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(167,139,250,0.15);">📊</div>
+          <div>
+            <div class="agent-card-name">sector-overview-agent</div>
+            <div class="agent-card-role">Subagent</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Drafts market structure, value chain, demand drivers, supply-chain/margin signals, and why-now narrative for AU bedding, mattresses, sleep products, and bedroom furniture.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-purple">sector-overview</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Write · Edit</span>
+          <span class="badge badge-green">web_search · web_fetch</span>
+        </div>
+      </div>
+
+      <!-- Competitive Analysis -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(167,139,250,0.15);">🔍</div>
+          <div>
+            <div class="agent-card-name">competitive-analysis-agent</div>
+            <div class="agent-card-role">Subagent</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Maps 13 Australian furniture/bedding competitors. Returns structured signals: what happened, source, why it matters, GM/Board relevance, confidence, and review flags.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-purple">competitive-analysis</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Write · Edit</span>
+          <span class="badge badge-green">web_search · web_fetch</span>
+        </div>
+      </div>
+
+      <!-- Comps Analysis -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(167,139,250,0.15);">📈</div>
+          <div>
+            <div class="agent-card-name">comps-analysis-agent</div>
+            <div class="agent-card-role">Subagent</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Builds peer comps and operating-signal benchmarks for public furniture/home-retail peers. Tracks sales growth, margins, inventory, store count, online mix, and promotional intensity.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-purple">comps-analysis</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Write · Edit</span>
+          <span class="badge badge-green">web_search · web_fetch</span>
+        </div>
+      </div>
+
+      <!-- Idea Generation -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(167,139,250,0.15);">💡</div>
+          <div>
+            <div class="agent-card-name">idea-generation-agent</div>
+            <div class="agent-card-role">Subagent</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Generates evidence-backed GM/Board follow-up actions (e.g. promotion response, range review, board watch items). Each idea includes evidence, risk-if-ignored, and recommended next step.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-purple">idea-generation</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Write · Edit</span>
+        </div>
+      </div>
+
+      <!-- GM/Board Classifier -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(167,139,250,0.15);">🗂️</div>
+          <div>
+            <div class="agent-card-name">gm-board-classifier-agent</div>
+            <div class="agent-card-role">Subagent</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Routes each material signal as GM (operational), Board (strategic/risk), Both, or Ignore. All routing is advisory — requires human approval before any message is sent.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-purple">gm-board-classifier</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Write · Edit</span>
+        </div>
+      </div>
+
+      <!-- Note Writer -->
+      <div class="agent-card">
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background: rgba(52,211,153,0.15);">📝</div>
+          <div>
+            <div class="agent-card-name">note-writer-agent</div>
+            <div class="agent-card-role">Subagent — Output</div>
+          </div>
+        </div>
+        <div class="agent-card-desc">
+          Assembles approved content into three Microsoft Word artifacts. Optionally hands off to pptx-author for slide production. Only runs after human review gate is cleared.
+        </div>
+        <div class="agent-section-label">Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <span class="badge badge-blue">pptx-author (optional)</span>
+        </div>
+        <div class="agent-section-label">Tools</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">Read · Write · Edit</span>
+          <span class="badge badge-amber">mcp__office__word__*</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SECTION 3 — DATA SOURCES
+  ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Section 3</div>
+    <div class="section-title">Data Sources &amp; Memory</div>
+
+    <div class="source-grid">
+
+      <div class="source-card">
+        <div class="source-card-title">
+          <span style="font-size:1rem;">🔎</span>
+          Live Web Search (Primary)
+        </div>
+        <ul>
+          <li>Claude Platform built-in <code>web_search</code></li>
+          <li>Up to 10 relevant public sources per run</li>
+          <li>Competitor promotions, store signals, range updates</li>
+          <li>Investor announcements, ASX releases</li>
+          <li>Retail trade news and macro context</li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-title">
+          <span style="font-size:1rem;">🔗</span>
+          Stable URL Fallbacks (Secondary)
+        </div>
+        <ul>
+          <li>Snooze — snooze.com.au</li>
+          <li>Forty Winks — fortywinks.com.au</li>
+          <li>Harvey Norman Holdings — harveynormanholdings.com.au</li>
+          <li>Temple &amp; Webster Investor — templeandwebstergroup.com.au</li>
+          <li>Adairs Investor — adairs.com.au/investor-centre</li>
+          <li>Nick Scali IR — nickscali.com.au/investor-relations</li>
+          <li>IKEA Australia — ikea.com/au/en</li>
+          <li>ABS Retail Trade — abs.gov.au</li>
+          <li>ASX Announcements — asx.com.au</li>
+          <li>Inside Retail Australia — insideretail.com.au</li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-title">
+          <span style="font-size:1rem;">🏷️</span>
+          Competitor Watchlist (13 Players)
+        </div>
+        <ul>
+          <li>Snooze (LKG/Hypnos portfolio)</li>
+          <li>Future Sleep &amp; G&amp;G Furniture (Hypnos)</li>
+          <li>Forty Winks · Bedshed · Sleeping Giant</li>
+          <li>Harvey Norman · Domayne</li>
+          <li>IKEA Australia</li>
+          <li>Temple &amp; Webster · Adairs · Nick Scali</li>
+          <li>Freedom · Fantastic Furniture · Amart</li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-title">
+          <span style="font-size:1rem;">🧪</span>
+          Synthetic Demo Fallback (Last Resort)
+        </div>
+        <ul>
+          <li>Only when live search &amp; stable URLs fail</li>
+          <li>Requires explicit demo/fallback context</li>
+          <li>Always labelled <code>SYNTHETIC DEMO FALLBACK</code></li>
+          <li>Excluded from GM/Board routing without human approval</li>
+          <li>Separated in source log under its own section</li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-title">
+          <span style="font-size:1rem;">🗄️</span>
+          Session Memory &amp; Outputs
+        </div>
+        <ul>
+          <li>No persistent cross-session memory (by design)</li>
+          <li>Source logs stored per run in <code>output/</code></li>
+          <li>GM Digest: lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx</li>
+          <li>Board Digest: lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx</li>
+          <li>Source Log: lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx</li>
+          <li>Run logs &amp; cost logs planned for production</li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <div class="source-card-title">
+          <span style="font-size:1rem;">🚫</span>
+          Excluded Data
+        </div>
+        <ul>
+          <li>No confidential LK Group / Hypnos data</li>
+          <li>No employer or private client information</li>
+          <li>No CapIQ / FactSet in cookbook mode (future)</li>
+          <li>No auto-distribution to GM or Board</li>
+          <li>No unsourced claims passed as facts</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SECTION 4 — GOVERNANCE
+  ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Section 4</div>
+    <div class="section-title">Governance &amp; Cost Controls</div>
+
+    <div class="two-col">
+
+      <div class="info-card">
+        <div class="info-card-title">🛡️ Governance Rules</div>
+        <ul class="info-list">
+          <li><span class="icon">✅</span>Every material item must cite a source URL</li>
+          <li><span class="icon">✅</span>Facts and interpretation are always separated</li>
+          <li><span class="icon">✅</span>Low-confidence / high-impact items flagged for review</li>
+          <li><span class="icon">✅</span>GM/Board routing is advisory — never automatic</li>
+          <li><span class="icon">✅</span>Human approval required before any circulation</li>
+          <li><span class="icon">✅</span>Unsourced items marked <code>[UNSOURCED]</code></li>
+          <li><span class="icon">✅</span>All outputs include a draft-only disclaimer</li>
+          <li><span class="icon">✅</span>Source log included in every output package</li>
+        </ul>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title">💰 Cost Controls</div>
+        <ul class="info-list">
+          <li><span class="icon">⚡</span>Limit source scan to 10 relevant sources by default</li>
+          <li><span class="icon">⚡</span>Prefer primary sources over repeated broad searches</li>
+          <li><span class="icon">⚡</span>Cache source logs where possible between runs</li>
+          <li><span class="icon">⚡</span>Record API &amp; search costs for operational planning</li>
+          <li><span class="icon">⚡</span>Stable URL fallback reduces redundant search calls</li>
+          <li><span class="icon">⚡</span>Synthetic fallback only as absolute last resort</li>
+          <li><span class="icon">⚡</span>Claude Sonnet 4.6 used across all agents (cost-balanced)</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SECTION 5 — ROADMAP
+  ══════════════════════════════════════════════════ -->
+  <section>
+    <div class="section-label">Section 5</div>
+    <div class="section-title">Future Development Roadmap</div>
+
+    <div class="roadmap-grid">
+
+      <!-- Phase 1 -->
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-header">
+          <div class="phase-dot" style="background: var(--green);"></div>
+          <div>
+            <div class="phase-title">Phase 1 — Production Data Connectors</div>
+            <div style="font-size:0.75rem;color:var(--muted);">Replace web_search with governed, scheduled connectors</div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">📢</div>
+          <div>
+            <div class="roadmap-item-title">ASX Announcements Connector</div>
+            <div class="roadmap-item-text">Automated ingestion of ASX market announcements for furniture/retail peers. Replaces manual web_fetch of ASX search page.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">📉</div>
+          <div>
+            <div class="roadmap-item-title">ABS Retail Trade Connector</div>
+            <div class="roadmap-item-text">Scheduled pull of ABS retail trade and household-goods data for demand context, replacing manual URL fetch.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🏢</div>
+          <div>
+            <div class="roadmap-item-title">Company Investor Pages Monitor</div>
+            <div class="roadmap-item-text">Continuous monitoring of investor relation pages (Adairs, Nick Scali, Temple &amp; Webster, Harvey Norman) for new releases.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🕵️</div>
+          <div>
+            <div class="roadmap-item-title">Competitor Web Monitor</div>
+            <div class="roadmap-item-text">Structured scraping of competitor product pages, promotion banners, and pricing to detect range/price changes automatically.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-header">
+          <div class="phase-dot" style="background: var(--accent);"></div>
+          <div>
+            <div class="phase-title">Phase 2 — Premium Data &amp; Analysis</div>
+            <div style="font-size:0.75rem;color:var(--muted);">Institutional-grade financial data integration</div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">💼</div>
+          <div>
+            <div class="roadmap-item-title">CapIQ MCP Integration</div>
+            <div class="roadmap-item-text">Enable Capital IQ MCP connector for the comps-analysis-agent to pull structured financials, valuation multiples, and consensus estimates.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">📊</div>
+          <div>
+            <div class="roadmap-item-title">FactSet MCP Integration</div>
+            <div class="roadmap-item-text">Enable FactSet MCP for real-time market data, sector indices, and peer benchmarking in comps and sector-overview subagents.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🧮</div>
+          <div>
+            <div class="roadmap-item-title">Excel/Spreadsheet Output</div>
+            <div class="roadmap-item-text">Extend comps-analysis-agent to produce structured Excel outputs with formulas, peer comparison tables, and statistical summaries.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">📐</div>
+          <div>
+            <div class="roadmap-item-title">Valuation Multiples Benchmarking</div>
+            <div class="roadmap-item-text">Add EV/EBITDA, P/E, and FCF yield benchmarking for public peers once CapIQ/FactSet connectors are live.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-header">
+          <div class="phase-dot" style="background: var(--accent2);"></div>
+          <div>
+            <div class="phase-title">Phase 3 — Output &amp; Workflow Automation</div>
+            <div style="font-size:0.75rem;color:var(--muted);">Governed distribution and scheduling</div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">📄</div>
+          <div>
+            <div class="roadmap-item-title">Microsoft 365 Output Connector</div>
+            <div class="roadmap-item-text">Push approved Word/PPTX artifacts directly to SharePoint, OneDrive, or Teams channels via Microsoft Graph API.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">✔️</div>
+          <div>
+            <div class="roadmap-item-title">Approval Workflow Connector</div>
+            <div class="roadmap-item-text">Formalize human review with a structured approval interface — item-level approve/reject/edit, audit trail, and approval state tracking.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">⏰</div>
+          <div>
+            <div class="roadmap-item-title">Scheduled Runs (Cron)</div>
+            <div class="roadmap-item-text">Weekly scheduled trigger via Anthropic Managed Agent platform — auto-generate draft digest, alert reviewer, await approval before output.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🔔</div>
+          <div>
+            <div class="roadmap-item-title">Failure Alerts &amp; Run Monitoring</div>
+            <div class="roadmap-item-text">Failure notifications, run logs, model/tool cost logs, and output versioning for operational governance in production.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="roadmap-phase">
+        <div class="roadmap-phase-header">
+          <div class="phase-dot" style="background: var(--amber);"></div>
+          <div>
+            <div class="phase-title">Phase 4 — Intelligence &amp; Personalisation</div>
+            <div style="font-size:0.75rem;color:var(--muted);">Learning from feedback, expanding coverage</div>
+          </div>
+        </div>
+
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🧠</div>
+          <div>
+            <div class="roadmap-item-title">Cross-Run Memory &amp; Source Caching</div>
+            <div class="roadmap-item-text">Persist source logs and prior signals across runs. Enable delta detection — highlight only new or changed signals vs. last digest.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🎯</div>
+          <div>
+            <div class="roadmap-item-title">Reviewer Preference Learning</div>
+            <div class="roadmap-item-text">Track human approval/rejection patterns to improve GM/Board classification accuracy over time without retraining the model.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🌏</div>
+          <div>
+            <div class="roadmap-item-title">Expanded Market Coverage</div>
+            <div class="roadmap-item-text">Extend beyond AU to NZ and UK markets where Hypnos Group has presence. Add sleep-technology and wellness adjacency tracking.</div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="roadmap-item-icon">🤖</div>
+          <div>
+            <div class="roadmap-item-title">Agentic Skill Evals</div>
+            <div class="roadmap-item-text">Run systematic evals on each subagent's skill output quality — source reliability, classification accuracy, idea relevance scoring.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p>LKG Furniture Market Researcher · Agent System Overview · Claude Sonnet 4.6 · Public data only · Draft work product · Not financial advice</p>
+    <p style="margin-top:4px;">Human approval required before any output is circulated to GM or Board.</p>
+  </footer>
+
+</body>
+</html>

@@ -49,12 +49,12 @@ Third-party reports, competitor pages, issuer materials, and search results are 
 | `gm-board-classifier-agent` | Classifies items as GM, Board, Both, or Ignore | No | None |
 | `note-writer-agent` | Creates approved Word digest and source-log artifacts | Yes | Optional Word tooling |
 
-The note writer is the only write-holder. It produces:
+The note writer is the only write-holder. It produces (with run date suffix `DD-MM-YYYY`):
 
 ```text
-output/lkg-furniture-gm-weekly-digest.docx
-output/lkg-furniture-board-weekly-digest.docx
-output/lkg-furniture-internal-source-log.docx
+output/lkg-furniture-gm-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-board-weekly-digest-{DD-MM-YYYY}.docx
+output/lkg-furniture-internal-source-log-{DD-MM-YYYY}.docx
 ```
 
 The agent drafts and creates approved files only. It does not send or circulate them.
