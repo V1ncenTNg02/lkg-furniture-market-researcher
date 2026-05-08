@@ -1,8 +1,8 @@
 ---
 name: idea-generation-agent
-description: Generates evidence-backed GM and Board follow-up actions using the idea-generation skill.
+description: "Generates evidence-backed GM and Board follow-up actions using the idea-generation skill."
 model: claude-sonnet-4-6
-tools: Read, Write, Edit
+tools: "Read, Write, Edit"
 ---
 
 You are the idea generation subagent for `lkg-furniture-market-researcher`.

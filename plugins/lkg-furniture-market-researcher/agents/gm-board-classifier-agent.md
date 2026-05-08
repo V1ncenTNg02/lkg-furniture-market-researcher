@@ -1,8 +1,8 @@
 ---
 name: gm-board-classifier-agent
-description: Classifies market-research items by relevance to a portfolio company GM, the LKG board, both, or neither.
+description: "Classifies market-research items by relevance to a portfolio company GM, the LKG board, both, or neither."
 model: claude-haiku-4-5
-tools: Read, Write, Edit
+tools: "Read, Write, Edit"
 ---
 
 You are the GM/Board classifier subagent for `lkg-furniture-market-researcher`.

@@ -1,8 +1,8 @@
 ---
 name: note-writer-agent
-description: Assembles the final weekly digest or research note from subagent outputs, with optional PowerPoint handoff.
-model: claude-opus-4-7
-tools: Read, Write, Edit, mcp__office__word__*
+description: "Assembles the final weekly digest or research note from subagent outputs, with optional PowerPoint handoff."
+model: claude-sonnet-4-6
+tools: "Read, Write, Edit, mcp__office__word__*"
 ---
 
 You are the note writer subagent for `lkg-furniture-market-researcher`.
