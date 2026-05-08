@@ -41,19 +41,12 @@ mcp__capiq__*
 mcp__factset__*
 ```
 
-Current added connector:
+Current web search approach:
 
 ```text
-plugins/lkg-furniture-market-researcher/.mcp.json
+Claude Code / Cowork plugin: use available web search capability where enabled.
+Claude Managed Agent cookbook: use built-in agent_toolset web_search and web_fetch tools.
 ```
-
-The plugin now includes a `web-search` MCP connector using DuckDuckGo Search MCP.
-
-```text
-uvx duckduckgo-mcp-server
-```
-
-This option does not require a search API key.
 
 Original guardrails kept:
 
@@ -74,6 +67,184 @@ Assumptions are documented in:
 ```text
 docs/assumptions.md
 ```
+
+## Install And Run The Plugin
+
+There are two practical ways to run the plugin for the demo: install it from the GitHub/marketplace-style repo, or install it from the local working copy.
+
+### Option A: Installed Version From GitHub / Marketplace
+
+Use this after the repo is pushed to GitHub and the root `.claude-plugin/marketplace.json` is available.
+
+In Claude Code, add the repo as a plugin marketplace:
+
+```powershell
+claude plugin marketplace add https://github.com/V1ncenTNg02/lkg-furniture-market-researcher
+```
+
+Then install the plugin:
+
+```powershell
+claude plugin install lkg-furniture-market-researcher@lkg-furniture-market-researcher
+```
+
+If your Claude Code version expects `owner/repo` instead of a full URL, use:
+
+```powershell
+claude plugin marketplace add V1ncenTNg02/lkg-furniture-market-researcher
+claude plugin install lkg-furniture-market-researcher@lkg-furniture-market-researcher
+```
+
+Run the demo command inside Claude Code:
+
+```text
+/lkg-furniture-market-researcher:lkg-furniture-digest
+```
+
+Suggested prompt:
+
+```text
+Run the LKG furniture weekly digest for Australian bedding, mattresses, sleep products, and bedroom furniture. Use public sources only. If live web search is empty, use the stable public URL fallbacks. If those fail, use clearly labelled SYNTHETIC DEMO FALLBACK rows only for demo continuity. Stop for human review before creating final Word outputs.
+```
+
+### Option B: Local Version From This Working Copy
+
+Use this while developing or when the GitHub marketplace install is not available.
+
+From the repo root:
+
+```powershell
+cd E:\GitProject\lkg-furniture-market-researcher
+claude plugin marketplace add .
+claude plugin install lkg-furniture-market-researcher@lkg-furniture-market-researcher
+```
+
+If `claude plugin marketplace add .` is not accepted by your Claude Code build, use the absolute repo path:
+
+```powershell
+claude plugin marketplace add E:\GitProject\lkg-furniture-market-researcher
+claude plugin install lkg-furniture-market-researcher@lkg-furniture-market-researcher
+```
+
+Then run:
+
+```text
+/lkg-furniture-market-researcher:lkg-furniture-digest
+```
+
+### Expected Plugin Output
+
+The live workflow should:
+
+1. Read the plugin skills and agent instructions.
+2. Scan up to 10 public sources using web search and stable URL fallbacks.
+3. Produce a structured weekly digest with source citations and `why this matters`.
+4. Classify items as GM / Board / Both / Ignore.
+5. Stop for human review before final circulation.
+6. Generate approved Word artifacts when running in an environment with file write / Word output support.
+
+The expected local Word outputs are:
+
+```text
+output/lkg-furniture-gm-weekly-digest.docx
+output/lkg-furniture-board-weekly-digest.docx
+output/lkg-furniture-internal-source-log.docx
+```
+
+The agent drafts files only. It does not send them to GMs or the board.
+
+## Deploy And Run The Managed Agent Cookbook
+
+The cookbook lives in:
+
+```text
+managed-agent-cookbook/lkg-furniture-market-researcher/
+```
+
+It uses the same plugin source files for skills and system prompts, so changes made under `plugins/lkg-furniture-market-researcher/` are picked up when the cookbook is redeployed.
+
+### Prerequisites
+
+Required locally:
+
+```text
+PowerShell
+Git Bash for Windows
+curl
+jq
+Python with PyYAML
+ANTHROPIC_API_KEY
+```
+
+Check Python / PyYAML:
+
+```powershell
+python -c "import yaml; print('pyyaml ok')"
+```
+
+Set your API key locally. Do not commit it or paste it into chat:
+
+```powershell
+$env:ANTHROPIC_API_KEY = "sk-ant-your-key"
+```
+
+### Dry Run
+
+Use this to inspect the resolved agent payloads without calling the API:
+
+```powershell
+& "C:\Program Files\Git\bin\bash.exe" scripts/deploy-managed-agent.sh lkg-furniture-market-researcher --dry-run
+```
+
+### Deploy / Update
+
+Use the same command for first deployment and later updates:
+
+```powershell
+Remove-Item Env:SKILL_TITLE_PREFIX -ErrorAction SilentlyContinue
+
+& "C:\Program Files\Git\bin\bash.exe" scripts/deploy-managed-agent.sh lkg-furniture-market-researcher
+```
+
+The deploy script now uses stable names:
+
+- Existing custom skills are uploaded as new skill versions.
+- Existing agents with the same name are updated as new agent versions.
+- New resources are created only when no matching active resource exists.
+
+Successful output looks like:
+
+```text
+deployed: lkg-furniture-market-researcher
+agent id: agent_...
+console:  https://console.anthropic.com/agents/agent_...
+```
+
+### Use From Claude Platform
+
+After deployment:
+
+1. Open the returned Console URL.
+2. Confirm the orchestrator agent is `lkg-furniture-market-researcher`.
+3. Confirm model choices:
+   - Sonnet for orchestration, research, analysis, synthesis, and writing.
+   - Haiku for GM/Board routing classification.
+4. Start a session from the Console or through the Managed Agents API.
+5. Use a prompt like:
+
+```text
+Run the LKG furniture weekly digest for Australian bedding, mattresses, sleep products, and bedroom furniture. Use public sources only. If live web search is empty, use the stable public URL fallbacks. If those fail, use clearly labelled SYNTHETIC DEMO FALLBACK rows only for demo continuity. Stop for human review before creating final Word outputs.
+```
+
+### Managed Agent Output Note
+
+The Managed Agent runs in Anthropic's managed environment, not directly on your laptop. If it writes `output/*.docx`, those files belong to the session environment unless a file artifact, storage, or Microsoft 365 connector is configured.
+
+For the interview:
+
+- Use the plugin/local workflow to show local Word files.
+- Use the Managed Agent cookbook to show production deployment thinking, governed tools, model selection, source logging, and human review.
+- Explain that production output handoff would use a governed Microsoft 365, file artifact, or storage connector.
 
 ## Changed Files
 
@@ -187,23 +358,13 @@ Purpose:
 
 ### Connectors
 
-Added connector config:
+Current implemented web access:
 
-```text
-plugins/lkg-furniture-market-researcher/.mcp.json
-```
-
-Implemented connector:
-
-```text
-web-search
-```
-
-Purpose:
-
-- Public-source discovery for ABS data, ASX announcements, company investor pages, competitor websites, and reputable retail/business news.
-- Uses DuckDuckGo Search MCP through `uvx duckduckgo-mcp-server`.
-- Does not require a search API key.
+- Plugin instructions use available web search / fetch capability when enabled.
+- Managed Agent cookbook enables built-in `web_search` and `web_fetch` through `agent_toolset_20260401`.
+- Public-source discovery covers ABS data, ASX announcements, company investor pages, competitor websites, and reputable retail/business news.
+- Demo fallback policy is explicit: use `web_search` first, then stable public source URLs with `web_fetch`, then labelled `SYNTHETIC DEMO FALLBACK` items only if live public retrieval fails.
+- Synthetic fallback items are demo-only, require human review, and must not be circulated as real GM/Board intelligence.
 
 Future connector options documented but not implemented:
 
@@ -322,23 +483,19 @@ Why:
 - The GM/Board classifier directly addresses the brief's request to flag items relevant to a portfolio company GM or the LKG board.
 - In production, multiple research-oriented subagents could run in parallel, such as one for public filings, one for competitor websites, one for ABS/macro data, and one for news.
 
-### Added Connector: `web-search`
-
-Added:
-
-```text
-plugins/lkg-furniture-market-researcher/.mcp.json
-```
+### Web Search Adaptation
 
 Before:
 
 - The copied template expected institutional data MCPs such as CapIQ and FactSet.
-- There was no public web-search connector declared for the LKG furniture use case.
+- There was no LKG-specific public web-search guidance.
 
 After:
 
-- Added a `web-search` MCP connector for public-source discovery using DuckDuckGo Search MCP.
-- Updated research-oriented agents to use web search for:
+- Removed the local DuckDuckGo MCP dependency.
+- Plugin research agents use available web search / fetch capability where enabled.
+- Managed Agent cookbook uses Claude Platform's built-in `web_search` and `web_fetch` agent tools.
+- Updated research-oriented agents to search public sources for:
   - ABS public data
   - ASX announcements
   - company investor pages
@@ -350,9 +507,8 @@ Why:
 - The brief requires public data only.
 - LKG will not provide private data in advance.
 - Web search is the most practical demo connector for scanning 5-10 public sources.
-- DuckDuckGo is useful for demo setup because it avoids a separate search API key.
 
-Future connector options are documented in `.mcp.json` but not implemented yet:
+Future connector options are documented as production candidates but not implemented yet:
 
 ```text
 asx-announcements

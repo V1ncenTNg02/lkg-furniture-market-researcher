@@ -1,5 +1,5 @@
 name: note-writer-agent
-model: claude-opus-4-7
+model: claude-sonnet-4-6
 system:
   file: ../../../plugins/lkg-furniture-market-researcher/agents/note-writer-agent.md
   append: |

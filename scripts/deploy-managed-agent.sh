@@ -32,9 +32,17 @@ req() {
 
 # jq + python(pyyaml) do the manifest→payload transform
 command -v jq >/dev/null || { echo "requires jq" >&2; exit 1; }
-python3 -c 'import yaml' 2>/dev/null || { echo "requires python3 + pyyaml" >&2; exit 1; }
+PYTHON_BIN="${PYTHON_BIN:-python3}"
+if ! "$PYTHON_BIN" -c 'import yaml' 2>/dev/null; then
+  if command -v python >/dev/null && python -c 'import yaml' 2>/dev/null; then
+    PYTHON_BIN="python"
+  else
+    echo "requires python3/python + pyyaml" >&2
+    exit 1
+  fi
+fi
 yaml2json() {
-  python3 -c '
+  "$PYTHON_BIN" -c '
 import sys,os,re,yaml,json
 SAFE = re.compile(r"^[A-Za-z0-9._/:@-]*$")
 def sub(m):
@@ -51,7 +59,12 @@ json.dump(yaml.safe_load(t), sys.stdout)
 ' "$1"
 }
 
-SKILL_CACHE_FILE="$(mktemp -t skillcache)"
+make_tmp() {
+  local name="${1:-tmp}"
+  mktemp -t "${name}.XXXXXX" 2>/dev/null || mktemp 2>/dev/null
+}
+
+SKILL_CACHE_FILE="$(make_tmp skillcache)"
 trap 'rm -f "$SKILL_CACHE_FILE"' EXIT
 upload_skill() {
   local path="$1" key cached
@@ -63,19 +76,57 @@ upload_skill() {
     echo "${key}=${cached}" >>"$SKILL_CACHE_FILE"
     printf '%s' "$cached"; return
   fi
-  local resp id zip
-  zip="$(mktemp -t skill).zip"
-  (cd "$(dirname "$path")" && zip -qr "$zip" "$(basename "$path")")
-  # /v1/skills uses its own beta header and multipart, not the managed-agents JSON path
-  resp=$(curl -sS "$API/v1/skills" \
+  local resp id zip title existing_id
+  title="$key"
+  zip="$(make_tmp skill).zip"
+  "$PYTHON_BIN" - "$path" "$zip" <<'PY'
+import os
+import sys
+import zipfile
+
+skill_path = os.path.abspath(sys.argv[1])
+zip_path = os.path.abspath(sys.argv[2])
+parent = os.path.dirname(skill_path)
+
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+    for root, _, files in os.walk(skill_path):
+        for name in files:
+            full = os.path.join(root, name)
+            arc = os.path.relpath(full, parent)
+            zf.write(full, arc)
+PY
+  [[ -s "$zip" ]] || { echo "failed to create skill zip for $path at $zip" >&2; exit 1; }
+  local curl_zip="$zip"
+  if command -v cygpath >/dev/null 2>&1; then
+    curl_zip="$(cygpath -w "$zip")"
+  fi
+  existing_id=$(curl -sS "$API/v1/skills?source=custom&limit=100" \
     -H "x-api-key: $ANTHROPIC_API_KEY" \
     -H "anthropic-version: 2023-06-01" \
-    -H "anthropic-beta: skills-2025-10-02" \
-    -F "display_title=${SKILL_TITLE_PREFIX:-}$(basename "$path")" \
-    -F "files[]=@$zip")
+    -H "anthropic-beta: skills-2025-10-02" |
+    jq -r --arg title "$title" '.data[]? | select(.display_title == $title) | .id' |
+    head -1)
+
+  # /v1/skills uses its own beta header and multipart, not the managed-agents JSON path.
+  # Reuse stable display titles; if the skill already exists, upload a new version.
+  if [[ -n "$existing_id" ]]; then
+    resp=$(curl -sS "$API/v1/skills/$existing_id/versions" \
+      -H "x-api-key: $ANTHROPIC_API_KEY" \
+      -H "anthropic-version: 2023-06-01" \
+      -H "anthropic-beta: skills-2025-10-02" \
+      -F "files[]=@$curl_zip")
+    id="$existing_id"
+  else
+    resp=$(curl -sS "$API/v1/skills" \
+      -H "x-api-key: $ANTHROPIC_API_KEY" \
+      -H "anthropic-version: 2023-06-01" \
+      -H "anthropic-beta: skills-2025-10-02" \
+      -F "display_title=$title" \
+      -F "files[]=@$curl_zip")
+    id=$(jq -r '.id // empty' <<<"$resp")
+  fi
   rm -f "$zip"
-  id=$(jq -r '.id // empty' <<<"$resp")
-  if [[ -z "$id" ]]; then
+  if [[ -z "$id" || "$resp" == *'"type":"error"'* || "$resp" == *'"type": "error"'* ]]; then
     echo "POST /v1/skills failed for $path:" >&2
     echo "$resp" | jq . >&2 2>/dev/null || echo "$resp" >&2
     exit 1
@@ -138,14 +189,20 @@ create_agent() {
   skills_json="[]"
   while IFS= read -r p; do
     [[ -z "$p" ]] && continue
+    p="${p%$'\r'}"
     [[ -d "$p" ]] || { echo "skill path not found: $p" >&2; exit 1; }
-    skills_json=$(jq ". + [$(upload_skill "$p")]" <<<"$skills_json")
+    local uploaded_skill
+    if ! uploaded_skill="$(upload_skill "$p")"; then
+      exit 1
+    fi
+    skills_json=$(jq ". + [$uploaded_skill]" <<<"$skills_json")
   done < <(jq -r '.skills[]? | select(.__upload) | .__upload' <<<"$json")
   json=$(jq --argjson s "$skills_json" '.skills=$s' <<<"$json")
 
   sub_ids="[]"
   while IFS= read -r m; do
     [[ -z "$m" ]] && continue
+    m="${m%$'\r'}"
     local out sid sver
     out=$(create_agent "$base/$m")
     sid=${out%% *}; sver=${out##* }
@@ -158,12 +215,24 @@ create_agent() {
     echo "$json" >>"$DRY_OUT"
     jq -r '"DRYRUN_" + .name + " 1"' <<<"$json"; return
   fi
-  local resp id ver
-  resp=$(req -X POST "$API/v1/agents" -d "$json")
+  local resp id ver name existing_agent existing_id existing_ver
+  name=$(jq -r '.name' <<<"$json")
+  existing_agent=$(req "$API/v1/agents?limit=100" |
+    jq -c --arg name "$name" '.data[]? | select(.archived_at == null and .name == $name)' |
+    head -1)
+  existing_id=$(jq -r '.id // empty' <<<"$existing_agent")
+  existing_ver=$(jq -r '.version // empty' <<<"$existing_agent")
+
+  if [[ -n "$existing_id" && -n "$existing_ver" ]]; then
+    resp=$(jq --argjson version "$existing_ver" '. + {version: $version}' <<<"$json" |
+      req -X POST "$API/v1/agents/$existing_id" -d @-)
+  else
+    resp=$(req -X POST "$API/v1/agents" -d "$json")
+  fi
   id=$(jq -r '.id // empty' <<<"$resp")
   ver=$(jq -r '.version // 1' <<<"$resp")
   if [[ -z "$id" ]]; then
-    echo "POST /v1/agents failed for $(jq -r .name <<<"$json"):" >&2
+    echo "POST /v1/agents failed for $name:" >&2
     echo "$resp" | jq . >&2 2>/dev/null || echo "$resp" >&2
     exit 1
   fi
@@ -171,7 +240,7 @@ create_agent() {
 }
 
 if [[ $DRY_RUN -eq 1 ]]; then
-  DRY_OUT="$(mktemp)"
+  DRY_OUT="$(make_tmp dryrun)"
   create_agent "$DIR/agent.yaml" >/dev/null
   echo "# --dry-run: resolved POST /v1/agents bodies (subagents first, orchestrator last)"
   jq -s '.' "$DRY_OUT"

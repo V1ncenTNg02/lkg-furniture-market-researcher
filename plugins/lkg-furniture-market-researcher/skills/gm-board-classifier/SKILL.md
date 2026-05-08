@@ -1,6 +1,9 @@
-# GM Board Classifier
-
+---
+name: gm-board-classifier
 description: Classifies LKG furniture market-research findings by relevance to a portfolio company GM, the LKG board, both audiences, or neither. Use after sector overview, competitive analysis, comps/operating signals, and idea-generation outputs have been drafted.
+---
+
+# GM Board Classifier
 
 ## Purpose
 
@@ -168,4 +171,3 @@ The human reviewer controls:
 - whether the message is edited
 - whether the item is suppressed
 - whether anything is circulated to a GM or the board
-

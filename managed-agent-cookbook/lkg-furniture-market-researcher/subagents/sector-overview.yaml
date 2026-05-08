@@ -1,5 +1,5 @@
 name: sector-overview-agent
-model: claude-opus-4-7
+model: claude-sonnet-4-6
 system:
   file: ../../../plugins/lkg-furniture-market-researcher/agents/sector-overview-agent.md
   append: |
@@ -10,9 +10,9 @@ tools:
     configs:
       - { name: read, enabled: true }
       - { name: grep, enabled: true }
-  - { type: mcp_toolset, mcp_server_name: web-search, default_config: { enabled: true } }
-mcp_servers:
-  - { type: url, name: web-search, url: "${WEB_SEARCH_MCP_URL}" }
+      - { name: web_search, enabled: true }
+      - { name: web_fetch, enabled: true }
+mcp_servers: []
 skills:
   - { path: ../../../plugins/lkg-furniture-market-researcher/skills/sector-overview }
 callable_agents: []

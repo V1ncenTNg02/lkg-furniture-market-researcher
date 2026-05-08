@@ -1,7 +1,7 @@
 # LKG Furniture Market Researcher - managed-agent cookbook
 
 name: lkg-furniture-market-researcher
-model: claude-opus-4-7
+model: claude-sonnet-4-6
 
 system:
   file: ../../plugins/lkg-furniture-market-researcher/agents/market-researcher.md
@@ -19,10 +19,10 @@ tools:
       - { name: read, enabled: true }
       - { name: grep, enabled: true }
       - { name: glob, enabled: true }
-  - { type: mcp_toolset, mcp_server_name: web-search, default_config: { enabled: true } }
+      - { name: web_search, enabled: true }
+      - { name: web_fetch, enabled: true }
 
-mcp_servers:
-  - { type: url, name: web-search, url: "${WEB_SEARCH_MCP_URL}" }
+mcp_servers: []
 
 skills:
   - { from_plugin: ../../plugins/lkg-furniture-market-researcher }

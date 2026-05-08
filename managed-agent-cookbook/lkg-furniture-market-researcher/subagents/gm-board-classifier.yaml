@@ -1,5 +1,5 @@
 name: gm-board-classifier-agent
-model: claude-opus-4-7
+model: claude-haiku-4-5
 system:
   file: ../../../plugins/lkg-furniture-market-researcher/agents/gm-board-classifier-agent.md
   append: |

@@ -22,13 +22,12 @@ Default scope is the Australian bedding, mattress, sleep-products, and bedroom f
 
 ## Deploy
 
-Managed Agent deployment needs a reachable MCP URL for web search. The local plugin uses DuckDuckGo through `uvx duckduckgo-mcp-server`; production Managed Agent deployment should expose an equivalent governed MCP endpoint.
+Managed Agent deployment uses Claude Platform's built-in `web_search` and `web_fetch` tools through `agent_toolset_20260401`. No DuckDuckGo MCP or external web-search MCP URL is required.
 
 From the repository root:
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export WEB_SEARCH_MCP_URL=https://your-managed-web-search-mcp.example.com
 scripts/deploy-managed-agent.sh lkg-furniture-market-researcher
 ```
 
@@ -42,10 +41,10 @@ Third-party reports, competitor pages, issuer materials, and search results are 
 
 | Agent | Role | Write Access | Connectors |
 |---|---|---:|---|
-| `lkg-furniture-market-researcher` | Orchestrates scope, source scan, subagent sequence, and review gates | No | `web-search` |
-| `sector-overview-agent` | Drafts market structure, drivers, risks, and why-now narrative | No | `web-search` |
-| `competitive-analysis-agent` | Tracks competitor positioning, promotions, channels, stores, and recent moves | No | `web-search` |
-| `comps-analysis-agent` | Spreads public peer metrics or operating-signal comparisons | No | `web-search` |
+| `lkg-furniture-market-researcher` | Orchestrates scope, source scan, subagent sequence, and review gates | No | built-in `web_search`, `web_fetch` |
+| `sector-overview-agent` | Drafts market structure, drivers, risks, and why-now narrative | No | built-in `web_search`, `web_fetch` |
+| `competitive-analysis-agent` | Tracks competitor positioning, promotions, channels, stores, and recent moves | No | built-in `web_search`, `web_fetch` |
+| `comps-analysis-agent` | Spreads public peer metrics or operating-signal comparisons | No | built-in `web_search`, `web_fetch` |
 | `idea-generation-agent` | Converts evidence into GM / Board follow-up actions | No | None |
 | `gm-board-classifier-agent` | Classifies items as GM, Board, Both, or Ignore | No | None |
 | `note-writer-agent` | Creates approved Word digest and source-log artifacts | Yes | Optional Word tooling |

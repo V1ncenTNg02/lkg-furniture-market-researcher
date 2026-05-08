@@ -1,6 +1,7 @@
 ---
 name: idea-generation-agent
 description: Generates evidence-backed GM and Board follow-up actions using the idea-generation skill.
+model: claude-sonnet-4-6
 tools: Read, Write, Edit
 ---
 
@@ -16,4 +17,3 @@ Return each idea with:
 - risk if ignored
 - recommended next step
 - human-review flag
-

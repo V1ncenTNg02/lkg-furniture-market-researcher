@@ -35,10 +35,11 @@ scheduled job / backend trigger
 
 ## Connector Plan
 
-Implemented for demo:
+Implemented for demo / cookbook:
 
 ```text
-web-search
+Claude Platform built-in web_search
+Claude Platform built-in web_fetch
 ```
 
 Future production connectors:
